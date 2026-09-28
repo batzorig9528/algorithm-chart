@@ -1,0 +1,172 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #2a213e40;
+  backdrop-filter: blur(5px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal {
+  position: relative;
+  background: #fff;
+  border: 1px solid #eee4f4;
+  border-radius: 18px;
+  box-shadow: 0 20px 90px #30204425;
+  width: 540px;
+  max-width: 100%;
+  padding: 39px;
+  max-height: 90vh;
+  overflow: auto;
+}
+.modal > .icon-button {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+}
+.modal-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: #a18bb7;
+  margin-bottom: 18px;
+}
+.modal h2 {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  color: #60516f;
+  margin-bottom: 12px;
+}
+.modal > p {
+  font-size: 11px;
+  color: #aa9cb7;
+  line-height: 1.9;
+}
+.examples-modal {
+  width: 850px;
+}
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 28px;
+}
+.example-card {
+  text-align: left;
+  border: 1px solid #e9e1f0;
+  border-radius: 11px;
+  padding: 20px 17px;
+  background: #fefcff;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+}
+.example-card:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: #bfa8d5;
+}
+.example-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1eafa;
+  color: #b19ac6;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 16px;
+}
+.number-1 {
+  background: #eef5fa;
+  color: #95b0c6;
+}
+.number-2 {
+  background: #f9f2e5;
+  color: #c5b18f;
+}
+.example-level {
+  float: right;
+  font-size: 8px;
+  color: #b1a0bd;
+  margin-top: 13px;
+}
+.example-card h3 {
+  font-size: 12px;
+  margin: 22px 0 10px;
+  color: #8b749d;
+}
+.example-card p {
+  font-size: 10px;
+  line-height: 1.8;
+  color: #b2a1bf;
+  min-height: 40px;
+}
+.example-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #ad95bf;
+  border-top: 1px solid #eee7f4;
+  padding-top: 15px;
+  margin-top: 20px;
+}
+.modal > p.modal-footnote {
+  font-size: 9px;
+  margin-top: 20px;
+  color: #c0b0cb;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+.help-steps {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.help-steps > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+.help-steps > div > b {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f3edf9;
+  color: #ae92c3;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.help-steps span {
+  font-size: 11px;
+  color: #b29fc0;
+  line-height: 1.8;
+}
+.help-steps strong {
+  display: block;
+  font-size: 12px;
+  color: #9376a8;
+  margin-bottom: 4px;
+}
+.help-note {
+  padding: 13px;
+  background: #fbf8fd;
+  font-size: 9px;
+  color: #ae95bf;
+  border-radius: 7px;
+  margin-bottom: 22px;
+  line-height: 1.9;
+}

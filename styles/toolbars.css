@@ -1,0 +1,170 @@
+.main-workspace {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.project-toolbar {
+  height: 90px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 27px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  gap: 12px;
+}
+.project-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+.project-icon {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e9e7f3;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #faf9fd;
+  color: #8b7fa9;
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.title-row input {
+  padding: 0;
+  border: 0;
+  color: #3c3a49;
+  font-size: 15px;
+  font-weight: 800;
+  width: 235px;
+  background: transparent;
+  outline: none;
+}
+.title-menu {
+  color: #98959f;
+  padding: 3px;
+}
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #a4a1ac;
+  font-size: 9px;
+  margin-top: 6px;
+}
+.save-status svg {
+  color: #94b3a3;
+}
+.project-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 35px;
+  border-radius: 6px;
+  padding: 0 13px;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+  border: 1px solid #e6e5ed;
+  background: #fff;
+  color: #666270;
+}
+.button:hover:not(:disabled) {
+  background: #f7f5ff;
+}
+.button.subtle {
+  border-color: transparent;
+  background: transparent;
+  color: #8c8998;
+}
+.new-button {
+  font-size: 10px;
+  height: 34px;
+}
+.editor-toolbar {
+  height: 57px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+}
+.view-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+}
+.view-tabs > button {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #93909e;
+  font-weight: 600;
+}
+.view-tabs > button.active {
+  color: #7866c9;
+  background: #f3f0fb;
+}
+.run-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.history-tools {
+  display: flex;
+  gap: 2px;
+}
+.history-tools .icon-button {
+  color: #9b97a6;
+}
+.tool-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+  margin: 0 5px;
+}
+.run-button {
+  color: white;
+  background: var(--purple);
+  border-color: var(--purple);
+  box-shadow: 0 2px 4px #6b5ce71a;
+}
+.run-button:hover:not(:disabled) {
+  background: #5c4dd8;
+}
+.step-button {
+  border-color: #e7e4ed;
+  background: #fff;
+  color: #777080;
+  height: 33px;
+  font-size: 10px;
+}
+.run-tools > .run-button {
+  height: 33px;
+  font-size: 10px;
+  min-width: 119px;
+}
+.editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}

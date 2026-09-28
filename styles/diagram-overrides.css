@@ -1,0 +1,54 @@
+/* Keep the first program visible while leaving longer diagrams scrollable. */
+.diagram {
+  padding-top: 38px;
+  padding-bottom: 45px;
+}
+.flow-block {
+  height: 48px;
+}
+.connector {
+  height: 23px;
+}
+.terminator {
+  height: 34px;
+}
+.kind-if {
+  height: 92px;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: var(--block-border);
+  justify-content: center;
+  padding: 0 25px;
+}
+.kind-if:before {
+  display: none;
+}
+.kind-if:after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: var(--block-bg);
+  z-index: 0;
+}
+.kind-if > * {
+  position: relative;
+  z-index: 1;
+}
+.kind-if .block-content strong {
+  max-width: 130px;
+}
+.kind-if.selected,
+.kind-if.executing {
+  background: #9a88dd;
+}
+.kind-if.executing:after {
+  background: #f1e5ff;
+}
+@media (max-width: 800px) {
+  .diagram {
+    padding-top: 55px;
+    padding-bottom: 60px;
+  }
+}

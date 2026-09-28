@@ -1,0 +1,54 @@
+.top-navigation > a[aria-current="page"] {
+  color: var(--purple);
+}
+.content-page {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 55px 32px;
+  background: #fbfafe;
+}
+.content-card {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+  background: white;
+  border: 1px solid #ece5f4;
+  border-radius: 16px;
+}
+.content-card h1 {
+  font-size: 28px;
+  color: #60516f;
+  margin: 0 0 14px;
+  letter-spacing: -0.7px;
+}
+.content-card > p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #aa9cb7;
+}
+.content-card .modal-footnote {
+  margin-top: 24px;
+  font-size: 10px;
+}
+.content-card.help-card {
+  max-width: 680px;
+}
+.content-card .help-steps {
+  margin: 32px 0;
+  gap: 28px;
+}
+@media (max-width: 800px) {
+  .content-page {
+    padding: 26px 16px;
+  }
+  .content-card {
+    padding: 26px 20px;
+  }
+  .content-card h1 {
+    font-size: 22px;
+  }
+  .content-card .example-grid {
+    grid-template-columns: 1fr;
+  }
+}

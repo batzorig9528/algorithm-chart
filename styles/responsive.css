@@ -1,0 +1,556 @@
+@media (min-height: 950px) {
+  .diagram {
+    padding-top: 65px;
+  }
+  .connector {
+    height: 34px;
+  }
+  .flow-block {
+    height: 59px;
+  }
+  .console-panel {
+    height: 210px;
+  }
+  .sidebar {
+    padding-top: 30px;
+  }
+  .palette {
+    gap: 12px;
+  }
+}
+@media (min-width: 1600px) {
+  .sidebar {
+    width: 265px;
+    padding-left: 23px;
+    padding-right: 23px;
+  }
+  .inspector {
+    width: 310px;
+  }
+  .flow-block {
+    width: 250px;
+  }
+  .project-toolbar {
+    padding: 0 32px;
+  }
+  .editor-toolbar {
+    padding: 0 28px;
+  }
+}
+@media (max-width: 1190px) {
+  .sidebar {
+    width: 215px;
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+  .inspector {
+    width: 242px;
+  }
+  .workspace-label {
+    display: none;
+  }
+  .top-navigation {
+    gap: 20px;
+  }
+  .project-toolbar {
+    padding: 0 20px;
+  }
+  .editor-toolbar {
+    padding: 0 15px;
+  }
+  .title-row input {
+    width: 210px;
+    font-size: 13px;
+  }
+  .flow-block {
+    width: 205px;
+  }
+  .diagram {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .canvas-tip {
+    display: none;
+  }
+  .canvas-bottom {
+    justify-content: flex-end;
+  }
+  .inspector-tabs {
+    gap: 15px;
+    padding: 0 15px;
+  }
+  .inspector-content {
+    padding: 20px 15px;
+  }
+  .history-tools {
+    gap: 0;
+  }
+  .run-tools {
+    gap: 4px;
+  }
+  .palette-item {
+    gap: 9px;
+  }
+  .palette-item strong {
+    font-size: 11px;
+  }
+  .palette-item small {
+    font-size: 9px;
+  }
+  .console-panel {
+    height: 165px;
+  }
+}
+@media (max-width: 1000px) {
+  .sidebar {
+    width: 190px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .palette-item {
+    padding: 10px 5px;
+  }
+  .palette-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .drag-grip {
+    display: none;
+  }
+  .inspector {
+    width: 215px;
+  }
+  .inspector-tabs {
+    gap: 12px;
+    padding: 0 12px;
+  }
+  .inspector-tabs button {
+    font-size: 9px;
+  }
+  .view-tabs > button {
+    padding: 0 7px;
+    font-size: 10px;
+  }
+  .history-tools {
+    display: none;
+  }
+  .run-tools > .tool-divider {
+    display: none;
+  }
+  .project-actions .export-button {
+    display: none;
+  }
+  .project-toolbar {
+    padding: 0 15px;
+  }
+  .topbar {
+    padding: 0 20px;
+  }
+  .title-row input {
+    width: 190px;
+  }
+  .new-button {
+    padding: 0 9px;
+  }
+  .step-button {
+    font-size: 9px;
+    padding: 0 8px;
+  }
+  .run-tools > .run-button {
+    min-width: 100px;
+    padding: 0 10px;
+  }
+  .editor-toolbar {
+    padding: 0 12px;
+  }
+  .learn-card {
+    padding: 13px;
+  }
+  .inspector-heading {
+    font-size: 10px;
+  }
+  .inspector-description {
+    font-size: 8px;
+  }
+  .empty-play {
+    display: none;
+  }
+  .diagram {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+  .local-badge {
+    display: none;
+  }
+  .canvas-caption {
+    left: 16px;
+  }
+  .palette-note {
+    font-size: 9px;
+  }
+  .guide-link {
+    font-size: 9px;
+  }
+}
+@media (max-width: 800px) {
+  .app-shell {
+    min-height: 750px;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .topbar {
+    height: 61px;
+  }
+  .top-navigation {
+    gap: 14px;
+  }
+  .top-navigation > a {
+    font-size: 0;
+    gap: 0;
+  }
+  .top-navigation > a svg {
+    width: 19px;
+    height: 19px;
+  }
+  .nav-divider,
+  .brand-divider {
+    display: none;
+  }
+  .brand {
+    font-size: 29px;
+  }
+  .workspace {
+    min-height: calc(100dvh - 61px);
+  }
+  .sidebar {
+    width: 165px;
+  }
+  .sidebar-description {
+    font-size: 8px;
+  }
+  .section-label {
+    font-size: 8px;
+  }
+  .palette-item {
+    gap: 7px;
+  }
+  .palette-item strong {
+    font-size: 10px;
+  }
+  .palette-item small {
+    font-size: 8px;
+  }
+  .palette-icon {
+    width: 29px;
+    height: 29px;
+  }
+  .sidebar-bottom {
+    display: none;
+  }
+  .palette-note {
+    font-size: 8px;
+  }
+  .main-workspace {
+    min-height: calc(100dvh - 61px);
+  }
+  .project-toolbar {
+    height: 76px;
+    padding: 0 12px;
+  }
+  .project-icon {
+    display: none;
+  }
+  .title-row input {
+    width: 180px;
+    font-size: 12px;
+  }
+  .new-button {
+    font-size: 0;
+    width: 29px;
+    padding: 0;
+    height: 29px;
+  }
+  .new-button svg {
+    width: 14px;
+  }
+  .save-status {
+    font-size: 8px;
+  }
+  .editor-toolbar {
+    height: auto;
+    min-height: 80px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .view-tabs {
+    height: 30px;
+  }
+  .run-tools {
+    margin-left: auto;
+  }
+  .inspector {
+    width: 210px;
+  }
+  .editor-body {
+    min-height: 540px;
+  }
+  .canvas-section {
+    min-height: 540px;
+  }
+  .canvas {
+    position: absolute;
+    inset: 0;
+  }
+  .diagram {
+    padding: 60px 30px 80px;
+  }
+  .inspector-content {
+    padding: 20px 12px;
+  }
+  .statusbar {
+    font-size: 7px;
+    padding: 0 10px;
+  }
+  .statusbar .made-with {
+    display: none;
+  }
+  .footer-divider {
+    margin: 0 2px;
+  }
+  .statusbar > span {
+    gap: 4px;
+  }
+  .console-empty {
+    padding: 0;
+    gap: 9px;
+  }
+  .console-empty p {
+    font-size: 10px;
+  }
+  .console-empty > div > span {
+    font-size: 8px;
+  }
+  .console-panel {
+    height: 175px;
+  }
+  .console-content {
+    padding: 0 14px;
+  }
+  .flow-block {
+    width: 185px;
+  }
+  .block-content strong {
+    max-width: 120px;
+  }
+  .inspector-description {
+    font-size: 8px;
+  }
+  .top-navigation .avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+  .example-card p {
+    min-height: 0;
+  }
+  .example-card h3 {
+    margin-top: 15px;
+  }
+  .modal {
+    padding: 30px 24px;
+  }
+  .modal h2 {
+    font-size: 21px;
+  }
+  .modal-actions {
+    flex-wrap: wrap;
+  }
+  .example-card {
+    padding: 16px;
+  }
+  .examples-modal {
+    max-width: 460px;
+  }
+}
+@media (max-width: 640px) {
+  .sidebar {
+    display: none;
+  }
+  .inspector {
+    width: 172px;
+  }
+  .inspector-tabs {
+    gap: 10px;
+    padding: 0 9px;
+  }
+  .inspector-tabs button {
+    font-size: 8px;
+    gap: 4px;
+  }
+  .inspector-tabs button svg {
+    width: 12px;
+  }
+  .inspector-content {
+    padding: 16px 10px;
+  }
+  .inspector-heading {
+    font-size: 9px;
+  }
+  .inspector-description {
+    font-size: 7px;
+    margin-bottom: 15px;
+  }
+  .variable-row {
+    grid-template-columns: 1fr 0.9fr 0.5fr;
+    gap: 4px;
+    font-size: 9px;
+  }
+  .variable-symbol {
+    width: 13px;
+    height: 15px;
+    font-size: 8px;
+  }
+  .variable-row > span:first-child {
+    gap: 4px;
+  }
+  .variable-row > span:nth-child(2) {
+    font-size: 7px;
+  }
+  .variable-row > code {
+    font-size: 9px;
+    padding-right: 0;
+  }
+  .info-note {
+    padding: 8px 7px;
+    gap: 6px;
+  }
+  .info-note svg {
+    width: 13px;
+  }
+  .info-note p,
+  .info-note b {
+    font-size: 8px;
+  }
+  .execution-settings {
+    padding: 12px 10px;
+    font-size: 8px;
+  }
+  .execution-settings label {
+    font-size: 8px;
+  }
+  .project-toolbar {
+    height: 72px;
+  }
+  .project-heading {
+    gap: 4px;
+  }
+  .title-row input {
+    width: 200px;
+  }
+  .project-actions {
+    gap: 5px;
+  }
+  .diagram {
+    padding-left: 27px;
+    padding-right: 27px;
+  }
+  .flow-block {
+    width: 168px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .block-content strong {
+    font-size: 11px;
+    max-width: 110px;
+  }
+  .block-icon {
+    width: 24px;
+  }
+  .terminator {
+    width: 120px;
+  }
+  .canvas-caption {
+    font-size: 9px;
+    left: 12px;
+  }
+  .canvas-caption > span:last-child {
+    display: none;
+  }
+  .canvas-bottom {
+    bottom: 12px;
+    right: 10px;
+  }
+  .zoom-controls {
+    gap: 0;
+    padding: 1px;
+  }
+  .zoom-controls > span {
+    font-size: 9px;
+    min-width: 31px;
+  }
+  .zoom-controls .icon-button {
+    width: 23px;
+  }
+  .editor-toolbar {
+    flex-wrap: nowrap;
+    min-height: 53px;
+    padding: 0 8px;
+    gap: 3px;
+  }
+  .view-tabs > button {
+    font-size: 0;
+    gap: 0;
+    padding: 0 8px;
+  }
+  .view-tabs > button svg {
+    width: 16px;
+  }
+  .run-tools > .icon-button {
+    width: 25px;
+  }
+  .step-button {
+    height: 30px;
+  }
+  .run-tools > .run-button {
+    font-size: 9px;
+    min-width: 95px;
+    height: 30px;
+  }
+  .console-empty {
+    gap: 10px;
+  }
+  .statusbar > span:first-child {
+    font-size: 6.5px;
+  }
+  .title-menu {
+    padding: 2px;
+  }
+  .execution-settings select {
+    min-width: 48px;
+  }
+  .block-editor input,
+  .block-editor textarea {
+    font-size: 10px;
+    padding: 8px;
+  }
+  .expression-help {
+    font-size: 8px;
+  }
+  .select-prompt {
+    padding: 45px 0;
+  }
+  .select-prompt h3 {
+    font-size: 10px;
+  }
+  .select-prompt p {
+    font-size: 8px;
+  }
+  .code-view {
+    margin: 55px 15px;
+    min-width: 300px;
+  }
+}
