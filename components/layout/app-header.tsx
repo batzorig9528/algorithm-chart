@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Workflow, BookOpen, CircleHelp } from "lucide-react";
+import { Workflow, BookOpen, CircleHelp, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { IconButton } from "@/components/ui/icon-button";
 
 const navigation = [
   { href: "/editor", label: "Засварлагч", icon: Workflow },
@@ -10,6 +12,7 @@ const navigation = [
 ];
 export function AppHeader() {
   const pathname = usePathname();
+  const { user, ready, openModal, logout } = useAuth();
   return (
     <header className="topbar">
       <Link className="brand" href="/editor" aria-label="Flow нүүр">
@@ -32,13 +35,31 @@ export function AppHeader() {
           </Link>
         ))}
         <span className="nav-divider" />
-        <span className="local-badge">
-          <span />
-          Хувийн орон зай
-        </span>
-        <div className="avatar" title="Локал хэрэглэгч">
-          С
-        </div>
+        {ready &&
+          (user ? (
+            <>
+              <div className="avatar" title={user.email}>
+                {user.email[0].toUpperCase()}
+              </div>
+              <IconButton title="Гарах" onClick={logout}>
+                <LogOut size={16} />
+              </IconButton>
+            </>
+          ) : (
+            <>
+              <span className="local-badge">
+                <span />
+                Хувийн орон зай
+              </span>
+              <button
+                type="button"
+                className="button subtle"
+                onClick={() => openModal("login")}
+              >
+                Нэвтрэх
+              </button>
+            </>
+          ))}
       </nav>
     </header>
   );

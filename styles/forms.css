@@ -9,13 +9,15 @@ dialog.modal::backdrop {
   backdrop-filter: blur(5px);
 }
 .modal-block-editor > p,
-.problem-form > p {
+.problem-form > p,
+.auth-form > p {
   font-size: 11px;
   line-height: 1.9;
   color: #a090b0;
 }
 .modal-block-editor label,
-.problem-form label {
+.problem-form label,
+.auth-form label {
   display: block;
   font-size: 12px;
   color: #7d6b8b;
@@ -24,7 +26,8 @@ dialog.modal::backdrop {
 .modal-block-editor input,
 .modal-block-editor textarea,
 .problem-form input,
-.problem-form textarea {
+.problem-form textarea,
+.auth-form input {
   display: block;
   width: 100%;
   margin-top: 9px;
@@ -46,7 +49,8 @@ dialog.modal::backdrop {
   font-size: 10px;
   color: #b3a4be;
 }
-.problem-form > p.modal-footnote {
+.problem-form > p.modal-footnote,
+.auth-form > p.modal-footnote {
   font-size: 10px;
   margin-top: 17px;
 }
