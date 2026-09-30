@@ -2,7 +2,7 @@
 import { Check, Shapes, Trash2 } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { Modal } from "@/components/ui/modal";
-import { definitions } from "@/lib/flow";
+import { definitions, splitForBounds } from "@/lib/flow";
 
 export function BlockEditorDialog() {
   const { draft, setDraft, formError, setModal, saveBlock, remove } =
@@ -21,7 +21,7 @@ export function BlockEditorDialog() {
         <p className="muted">
           {definitions[draft.block.kind].description}. Утгаа бичээд хадгалаарай.
         </p>
-        {["declare", "assign", "input"].includes(draft.block.kind) && (
+        {["declare", "assign", "input", "for"].includes(draft.block.kind) && (
           <label htmlFor="block-name">
             Хувьсагчийн нэр
             <input
@@ -39,7 +39,53 @@ export function BlockEditorDialog() {
             />
           </label>
         )}
-        {draft.block.kind !== "input" && (
+        {draft.block.kind === "for" &&
+          (() => {
+            const [start, end, step] = splitForBounds(draft.block.expression);
+            const set = (a: string, b: string, c: string) =>
+              setDraft({
+                ...draft,
+                block: {
+                  ...draft.block,
+                  expression: c ? `${a}; ${b}; ${c}` : `${a}; ${b}`,
+                },
+              });
+            return (
+              <>
+                <label htmlFor="block-start">
+                  Эхлэх утга
+                  <input
+                    id="block-start"
+                    maxLength={500}
+                    value={start}
+                    onChange={(e) => set(e.target.value, end, step)}
+                    placeholder="Жишээ: 1"
+                  />
+                </label>
+                <label htmlFor="block-end">
+                  Төгсөх утга (орно)
+                  <input
+                    id="block-end"
+                    maxLength={500}
+                    value={end}
+                    onChange={(e) => set(start, e.target.value, step)}
+                    placeholder="Жишээ: n"
+                  />
+                </label>
+                <label htmlFor="block-step">
+                  Өөрчлөлт <span>(заавал биш, анхны утга 1)</span>
+                  <input
+                    id="block-step"
+                    maxLength={500}
+                    value={step}
+                    onChange={(e) => set(start, end, e.target.value)}
+                    placeholder="Жишээ: 2 эсвэл -1"
+                  />
+                </label>
+              </>
+            );
+          })()}
+        {draft.block.kind !== "input" && draft.block.kind !== "for" && (
           <label htmlFor="block-expression">
             {["if", "while"].includes(draft.block.kind)
               ? "Нөхцөл"

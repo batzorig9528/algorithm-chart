@@ -1,5 +1,6 @@
 import { parseExpression, type Expression } from "./expression";
-export type Kind = "declare" | "input" | "output" | "assign" | "if" | "while";
+export type Kind =
+  "declare" | "input" | "output" | "assign" | "if" | "while" | "for";
 export type Block = {
   id: string;
   kind: Kind;
@@ -54,10 +55,24 @@ export const definitions: Record<
   while: {
     label: "Давталт",
     english: "While",
-    description: "Үйлдлийг давтах",
+    description: "Нөхцөл биелэх хооронд давтах",
     color: "pink",
   },
+  for: {
+    label: "Тоолуур давталт",
+    english: "For",
+    description: "Эхлэлээс төгсгөл хүртэл 1-ээр нэмэгдэн давтах",
+    color: "teal",
+  },
 };
+// A "for" block keeps its range in `expression` as "start; end; step" (end inclusive,
+// step optional and 1 by default; a negative step counts down).
+export function splitForBounds(expression: string): [string, string, string] {
+  const [start = "", end = "", step = ""] = expression
+    .split(";")
+    .map((part) => part.trim());
+  return [start, end, step];
+}
 let serial = 0;
 export function block(kind: Kind, name = "", expression = ""): Block {
   return {
@@ -158,7 +173,7 @@ export function* execute(
           "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
         );
       if (
-        ["declare", "assign", "input"].includes(b.kind) &&
+        ["declare", "assign", "input", "for"].includes(b.kind) &&
         !/^[A-Za-z_]\w*$/.test(b.name)
       )
         throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
@@ -187,6 +202,30 @@ export function* execute(
         const condition = Boolean(evaluate(b.expression, variables));
         yield { id: b.id, variables: { ...variables } };
         yield* visit(condition ? b.children : b.otherwise);
+      } else if (b.kind === "for") {
+        const [startSource, endSource, stepSource] = splitForBounds(
+          b.expression,
+        );
+        const start = Number(evaluate(startSource, variables));
+        const end = Number(evaluate(endSource, variables));
+        const step = Math.trunc(Number(evaluate(stepSource || "1", variables)));
+        if (!Number.isFinite(start) || !Number.isFinite(end))
+          throw new Error("Тоолуур давталтын хязгаар тоо байх ёстой.");
+        if (!Number.isFinite(step) || step === 0)
+          throw new Error("Давталтын өөрчлөлт 0 эсвэл тоо биш байна.");
+        for (
+          let i = Math.trunc(start);
+          step > 0 ? i <= Math.trunc(end) : i >= Math.trunc(end);
+          i += step
+        ) {
+          if (++steps > 10000)
+            throw new Error(
+              "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
+            );
+          variables[b.name] = i;
+          yield { id: b.id, variables: { ...variables } };
+          yield* visit(b.children);
+        }
       } else {
         while (true) {
           if (++steps > 10000)

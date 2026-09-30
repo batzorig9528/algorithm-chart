@@ -1,4 +1,4 @@
-import { type Block, flatten } from "./flow";
+import { type Block, flatten, splitForBounds } from "./flow";
 import { type Expression, parseExpression } from "./expression";
 
 // Helpers preserve Flow's automatic number/text inputs and mixed text addition.
@@ -132,6 +132,15 @@ export function pythonCode(blocks: Block[]): string {
       .map((b) => {
         if (b.kind === "input")
           return `${pad}${name(b.name)} = ${helper("read")}()`;
+        if (b.kind === "for") {
+          const [start, end, step] = splitForBounds(b.expression);
+          const bound = (source: string) =>
+            `int(${number(parseExpression(source))})`;
+          const stop = step
+            ? `${bound(end)} + (1 if ${bound(step)} > 0 else -1), ${bound(step)}`
+            : `${bound(end)} + 1`;
+          return `${pad}for ${name(b.name)} in range(${bound(start)}, ${stop}):\n${pad}    _flow_steps += 1\n${pad}    if _flow_steps > 10000:\n${pad}        raise RuntimeError("Давталтын хязгаарт хүрлээ.")\n${emit(b.children, depth + 1)}`;
+        }
         const expression = render(parseExpression(b.expression));
         if (b.kind === "if")
           return `${pad}if ${expression}:\n${emit(b.children, depth + 1)}${b.otherwise.length ? `\n${pad}else:\n${emit(b.otherwise, depth + 1)}` : ""}`;
@@ -144,7 +153,9 @@ export function pythonCode(blocks: Block[]): string {
       .join("\n");
   }
   const body = emit(blocks, 1);
-  const loopCounter = flatten(blocks).some((b) => b.kind === "while")
+  const loopCounter = flatten(blocks).some(
+    (b) => b.kind === "while" || b.kind === "for",
+  )
     ? "    _flow_steps = 0\n"
     : "";
   const support = [...used].map((key) => helpers[key]).join("\n\n");

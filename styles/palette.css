@@ -252,3 +252,11 @@
 .guide-link svg:last-child {
   margin-left: auto;
 }
+
+.teal {
+  --block-color: #3f9aa5;
+  --block-bg: #edf7f8;
+  --block-border: #c8e5e8;
+  background: var(--block-bg);
+  color: var(--block-color);
+}

@@ -1,7 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Workflow, BookOpen, CircleHelp, LogOut } from "lucide-react";
+import {
+  Workflow,
+  BookOpen,
+  CircleHelp,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { IconButton } from "@/components/ui/icon-button";
 
@@ -10,6 +16,9 @@ const navigation = [
   { href: "/problems", label: "Бодлогын сан", icon: BookOpen },
   { href: "/help", label: "Тусламж", icon: CircleHelp },
 ];
+const isTeacherRole = (role?: string) =>
+  role?.toUpperCase() === "TEACHER" || role?.toUpperCase() === "ADMIN";
+
 export function AppHeader() {
   const pathname = usePathname();
   const { user, ready, openModal, logout } = useAuth();
@@ -24,7 +33,18 @@ export function AppHeader() {
       <span className="brand-divider" />
       <span className="workspace-label">Таны алгоритмын урлан</span>
       <nav className="top-navigation" aria-label="Үндсэн цэс">
-        {navigation.map(({ href, label, icon: Icon }) => (
+        {[
+          ...navigation,
+          ...(isTeacherRole(user?.role)
+            ? [
+                {
+                  href: "/dashboard",
+                  label: "Хяналтын самбар",
+                  icon: LayoutDashboard,
+                },
+              ]
+            : []),
+        ].map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}

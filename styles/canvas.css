@@ -198,7 +198,8 @@
   transform: skewX(10deg);
 }
 .kind-if,
-.kind-while {
+.kind-while,
+.kind-for {
   border-radius: 16px 4px 16px 4px;
   border-width: 1.5px;
 }

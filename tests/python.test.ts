@@ -60,3 +60,23 @@ test("invalid expressions cannot inject Python source", () => {
   assert.throws(() => pythonCode([block("output", "", "x; print(1)")]));
   assert.throws(() => pythonCode([block("input", "x\nprint(1)")]));
 });
+test("for block generates Python matching the flow executor", () => {
+  const loop = block("for", "i", "1; n");
+  loop.children = [block("assign", "sum", "sum + i")];
+  const blocks = [
+    block("input", "n"),
+    block("declare", "sum", "0"),
+    loop,
+    block("output", "", "sum"),
+  ];
+  assert.equal(run(blocks, "10\n"), "55");
+  assert.equal(run(blocks, "0\n"), "0");
+});
+test("for block supports custom and negative steps", () => {
+  const up = block("for", "i", "0; n; 2");
+  up.children = [block("output", "", "i")];
+  assert.equal(run([block("input", "n"), up], "6\n"), "0\n2\n4\n6");
+  const down = block("for", "i", "n; 1; -2");
+  down.children = [block("output", "", "i")];
+  assert.equal(run([block("input", "n"), down], "5\n"), "5\n3\n1");
+});

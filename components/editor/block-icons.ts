@@ -5,6 +5,7 @@ import {
   Sigma,
   GitBranch,
   RotateCcw,
+  Repeat,
 } from "lucide-react";
 export const icons = {
   declare: Braces,
@@ -13,4 +14,5 @@ export const icons = {
   assign: Sigma,
   if: GitBranch,
   while: RotateCcw,
+  for: Repeat,
 };

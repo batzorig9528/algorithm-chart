@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import {
   block,
   flatten,
+  splitForBounds,
   validateProject,
   type Block,
   type Kind,
   type Project,
 } from "@/lib/flow";
-import { examples } from "@/lib/examples";
+import type { Problem } from "@/types/problem";
 import { defaultValues } from "@/lib/editor-defaults";
 import { pythonCode } from "@/lib/python";
 import { parseExpression } from "@/lib/expression";
@@ -70,7 +71,7 @@ export function useEditorController() {
   const variableNames = [
     ...new Set([
       ...allBlocks
-        .filter((b) => ["declare", "assign", "input"].includes(b.kind))
+        .filter((b) => ["declare", "assign", "input", "for"].includes(b.kind))
         .map((b) => b.name),
       ...Object.keys(variables),
     ]),
@@ -131,13 +132,20 @@ export function useEditorController() {
     };
     try {
       if (
-        ["declare", "assign", "input"].includes(b.kind) &&
+        ["declare", "assign", "input", "for"].includes(b.kind) &&
         (!/^[A-Za-z_]\w*$/.test(b.name) || ["true", "false"].includes(b.name))
       )
         throw new Error(
           "Нэр латин үсэг эсвэл _-ээр эхэлнэ. true, false нэр ашиглахгүй.",
         );
-      if (b.kind !== "input") parseExpression(b.expression);
+      if (b.kind === "for") {
+        const [start, end, step] = splitForBounds(b.expression);
+        if (!start || !end)
+          throw new Error("Эхлэх болон төгсөх утгаа бичнэ үү.");
+        parseExpression(start);
+        parseExpression(end);
+        if (step) parseExpression(step);
+      } else if (b.kind !== "input") parseExpression(b.expression);
       commit(
         draft.slot
           ? insertProjectBlock(project, b, draft.slot)
@@ -204,14 +212,12 @@ export function useEditorController() {
     }
     e.target.value = "";
   }
-  function loadExample(index: number) {
+  function loadProblem(problem: Problem) {
     if (busy || !ready) return;
-    const example = examples[index];
-    if (!example) return;
     commit({
-      title: example.title,
-      description: example.description,
-      blocks: example.make(),
+      title: problem.title,
+      description: problem.description,
+      blocks: problem.blocks,
     });
     setSelected(null);
     setModal(null);
@@ -287,7 +293,7 @@ export function useEditorController() {
     download,
     downloadPython,
     importFile,
-    loadExample,
+    loadProblem,
     saveProblem,
   };
 }

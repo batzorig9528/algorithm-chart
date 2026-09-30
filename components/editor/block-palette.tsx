@@ -41,7 +41,7 @@ export function BlockPalette() {
         <kbd>⌕</kbd>
       </label>
       <div className="section-label">
-        ҮНДСЭН БЛОКУУД <span>6</span>
+        ҮНДСЭН БЛОКУУД <span>{Object.keys(definitions).length}</span>
       </div>
       <div className="palette">
         {(Object.keys(definitions) as Kind[])

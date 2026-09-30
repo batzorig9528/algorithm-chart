@@ -6,4 +6,5 @@ export const defaultValues: Record<Kind, [string, string]> = {
   assign: ["x", "x + 1"],
   if: ["", "x > 0"],
   while: ["", "x < 10"],
+  for: ["i", "1; 10"],
 };

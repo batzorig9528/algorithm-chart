@@ -25,7 +25,11 @@ export function verifyPassword(password: string, stored: string): boolean {
   const [saltHex, hashHex] = stored.split(":");
   if (!saltHex || !hashHex) return false;
   const expected = Buffer.from(hashHex, "hex");
-  const actual = scryptSync(password, Buffer.from(saltHex, "hex"), SCRYPT_KEYLEN);
+  const actual = scryptSync(
+    password,
+    Buffer.from(saltHex, "hex"),
+    SCRYPT_KEYLEN,
+  );
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
@@ -48,8 +52,7 @@ export function findUserByEmail(
   return db
     .prepare("SELECT id, email, password_hash FROM users WHERE email = ?")
     .get(normalizeEmail(email)) as
-    | { id: number; email: string; password_hash: string | null }
-    | undefined;
+    { id: number; email: string; password_hash: string | null } | undefined;
 }
 
 export function upsertTeeUser(
@@ -66,7 +69,7 @@ export function upsertTeeUser(
        auth_source = CASE WHEN auth_source = 'local' THEN 'both' ELSE auth_source END
        WHERE id = ?`,
     ).run(profile.name, profile.id, profile.role, existing.id);
-    return { id: existing.id, email, name: profile.name };
+    return { id: existing.id, email, name: profile.name, role: profile.role };
   }
   const result = db
     .prepare(
@@ -74,7 +77,12 @@ export function upsertTeeUser(
        VALUES (?, ?, 'tee', ?, ?)`,
     )
     .run(email, profile.name, profile.id, profile.role);
-  return { id: Number(result.lastInsertRowid), email, name: profile.name };
+  return {
+    id: Number(result.lastInsertRowid),
+    email,
+    name: profile.name,
+    role: profile.role,
+  };
 }
 
 export function createSession(
@@ -101,12 +109,23 @@ export function getUserBySessionToken(
   db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run();
   const row = db
     .prepare(
-      `SELECT u.id as id, u.email as email FROM sessions s
+      `SELECT u.id as id, u.email as email, u.name as name, u.tee_role as role FROM sessions s
        JOIN users u ON u.id = s.user_id
        WHERE s.token = ? AND s.expires_at > datetime('now')`,
     )
-    .get(token) as AuthUser | undefined;
-  return row ?? null;
+    .get(token) as
+    | { id: number; email: string; name: string | null; role: string | null }
+    | undefined;
+  if (!row) return null;
+  const user: AuthUser = { id: row.id, email: row.email };
+  if (row.name) user.name = row.name;
+  if (row.role) user.role = row.role;
+  return user;
+}
+
+export function isTeacher(user: AuthUser | null): boolean {
+  const role = user?.role?.toUpperCase();
+  return role === "TEACHER" || role === "ADMIN";
 }
 
 export function deleteSession(db: Database.Database, token: string): void {

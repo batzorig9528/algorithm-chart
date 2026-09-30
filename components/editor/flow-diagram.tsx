@@ -1,9 +1,13 @@
 "use client";
 import { RotateCcw } from "lucide-react";
-import { definitions, type Block } from "@/lib/flow";
+import { definitions, splitForBounds, type Block } from "@/lib/flow";
 import { useEditor } from "@/contexts/editor-context";
 import { icons } from "./block-icons";
 import { BlockConnector } from "./block-connector";
+function forLabel(b: Block) {
+  const [start, end, step] = splitForBounds(b.expression);
+  return `${b.name} = ${start} … ${end}${step ? ` (алхам ${step})` : ""}`;
+}
 export function FlowDiagram({
   list,
   parent = null,
@@ -25,7 +29,9 @@ export function FlowDiagram({
             ? b.name
             : b.kind === "declare" || b.kind === "assign"
               ? `${b.name} = ${b.expression}`
-              : b.expression;
+              : b.kind === "for"
+                ? forLabel(b)
+                : b.expression;
         return (
           <div className="flow-item" key={b.id}>
             <button
@@ -44,8 +50,8 @@ export function FlowDiagram({
               </span>
               <span className="block-dot" />
             </button>
-            {(b.kind === "if" || b.kind === "while") && (
-              <div className={`branches ${b.kind === "while" ? "loop" : ""}`}>
+            {(b.kind === "if" || b.kind === "while" || b.kind === "for") && (
+              <div className={`branches ${b.kind !== "if" ? "loop" : ""}`}>
                 <div className="branch">
                   <span className="branch-label">Тийм</span>
                   <FlowDiagram

@@ -82,3 +82,34 @@ test("project descriptions persist and reject malformed values", () => {
     false,
   );
 });
+
+test("for block counts from start to end inclusive and exposes the counter", () => {
+  const loop = block("for", "i", "1; 4");
+  loop.children = [block("assign", "sum", "sum + i")];
+  const blocks = [
+    block("declare", "sum", "0"),
+    loop,
+    block("output", "", "sum"),
+  ];
+  const gen = execute(blocks);
+  let out = "";
+  for (let f = gen.next(); !f.done; f = gen.next()) {
+    if (f.value.output !== undefined) out = f.value.output;
+  }
+  assert.equal(out, "10");
+});
+
+test("for block honours custom and negative steps", () => {
+  function outputs(expression: string) {
+    const loop = block("for", "i", expression);
+    loop.children = [block("output", "", "i")];
+    const gen = execute([loop]);
+    const out: string[] = [];
+    for (let f = gen.next(); !f.done; f = gen.next())
+      if (f.value.output !== undefined) out.push(f.value.output);
+    return out;
+  }
+  assert.deepEqual(outputs("0; 6; 2"), ["0", "2", "4", "6"]);
+  assert.deepEqual(outputs("5; 1; -2"), ["5", "3", "1"]);
+  assert.throws(() => outputs("1; 5; 0"));
+});
