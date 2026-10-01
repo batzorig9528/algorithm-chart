@@ -64,11 +64,31 @@
 .console-empty p {
   font-size: 11px;
   color: #9c8bab;
-  margin-bottom: 7px;
+  margin-bottom: 0;
 }
 .console-empty > div > span {
   font-size: 9px;
   color: #b9acc5;
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.16s ease,
+    margin-top 0.16s ease,
+    opacity 0.16s ease;
+}
+.console-empty:hover > div > span,
+.console-empty:focus-visible > div > span,
+.console-empty:focus-within > div > span {
+  margin-top: 7px;
+  max-height: 2em;
+  opacity: 1;
+}
+.console-empty:focus-visible {
+  outline: 2px solid #bcb2ff;
+  outline-offset: -2px;
+  border-radius: 8px;
 }
 .console-empty > div > span b {
   font-weight: 600;

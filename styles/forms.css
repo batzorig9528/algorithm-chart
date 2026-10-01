@@ -134,11 +134,25 @@ dialog.modal::backdrop {
   font-size: 10px;
   line-height: 1.9;
   color: #a596b6;
-  margin: 9px 0 14px;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.16s ease,
+    margin 0.16s ease,
+    opacity 0.16s ease;
+}
+.empty-workspace:hover p,
+.empty-workspace:focus-within p {
+  margin: 9px 0 0;
+  max-height: 4em;
+  opacity: 1;
 }
 .empty-workspace .button {
   color: #9676bd;
   border-color: #e6dcf0;
+  margin-top: 14px;
 }
 .custom-problem-button {
   margin-top: 20px;
