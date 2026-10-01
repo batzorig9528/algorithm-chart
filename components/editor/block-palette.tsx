@@ -20,16 +20,18 @@ export function BlockPalette() {
   const [search, setSearch] = useState("");
   return (
     <aside className="sidebar">
-      <div className="sidebar-title">
-        <span>Блокууд</span>
-        <IconButton
-          title="Блокийн самбар хаах"
-          onClick={() => setSidebar(false)}
-        >
-          <PanelLeftClose size={16} />
-        </IconButton>
+      <div className="sidebar-heading">
+        <div className="sidebar-title">
+          <span>Блокууд</span>
+          <IconButton
+            title="Блокийн самбар хаах"
+            onClick={() => setSidebar(false)}
+          >
+            <PanelLeftClose size={16} />
+          </IconButton>
+        </div>
+        <p className="sidebar-description">Алгоритмаа алхам алхмаар бүтээ.</p>
       </div>
-      <p className="sidebar-description">Алгоритмаа алхам алхмаар бүтээ.</p>
       <label className="search-box">
         <Search size={15} />
         <input

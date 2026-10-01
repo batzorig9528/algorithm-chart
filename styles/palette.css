@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   background: #fdfdff;
+  overflow-y: auto;
 }
 .sidebar-title {
   display: flex;
@@ -14,6 +15,9 @@
   font-size: 14px;
   font-weight: 800;
   padding: 0 4px;
+}
+.sidebar-heading {
+  margin-bottom: 20px;
 }
 .icon-button {
   width: 30px;
@@ -32,7 +36,20 @@
 .sidebar-description {
   font-size: 10px;
   color: var(--muted);
-  margin: 4px 4px 20px;
+  margin: 0 4px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.16s ease,
+    margin-top 0.16s ease,
+    opacity 0.16s ease;
+}
+.sidebar-heading:hover .sidebar-description,
+.sidebar-heading:focus-within .sidebar-description {
+  margin-top: 4px;
+  max-height: 2em;
+  opacity: 1;
 }
 .search-box {
   height: 36px;
@@ -112,12 +129,30 @@
   font-size: 12px;
   font-weight: 700;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0;
+  transition: margin-bottom 0.16s ease;
 }
 .palette-item small {
   font-size: 10px;
   color: #a2a1ad;
   display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.16s ease,
+    opacity 0.16s ease;
+}
+.palette-item:hover:not(:disabled) strong,
+.palette-item:focus-visible strong,
+.palette-item:focus-within strong {
+  margin-bottom: 5px;
+}
+.palette-item:hover:not(:disabled) small,
+.palette-item:focus-visible small,
+.palette-item:focus-within small {
+  max-height: 5em;
+  opacity: 1;
 }
 .drag-grip {
   margin-left: auto;

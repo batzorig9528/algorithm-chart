@@ -62,11 +62,15 @@ export function ProjectToolbar() {
           </div>
           <span className="save-status">
             <CheckCheck size={12} />
-            {storageError
-              ? "Хадгалах боломжгүй · Файл татаж аваарай"
-              : hasChanges
-                ? "Энэ төхөөрөмжид хадгалагдсан"
-                : "Хоосон схем · Блокоос эхлээрэй"}
+            <span
+              className={`save-status-text ${storageError || hasChanges ? "persistent" : "progressive"}`}
+            >
+              {storageError
+                ? "Хадгалах боломжгүй · Файл татаж аваарай"
+                : hasChanges
+                  ? "Энэ төхөөрөмжид хадгалагдсан"
+                  : "Хоосон схем · Блокоос эхлээрэй"}
+            </span>
           </span>
         </div>
       </div>

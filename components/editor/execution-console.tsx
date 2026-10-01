@@ -37,7 +37,7 @@ export function ExecutionConsole() {
       </div>
       <div className="console-content" aria-live="polite">
         {logs.length === 0 ? (
-          <div className="console-empty">
+          <div className="console-empty" tabIndex={0}>
             <span className="terminal-icon">
               <Terminal size={21} />
             </span>

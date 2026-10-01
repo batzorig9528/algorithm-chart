@@ -61,6 +61,20 @@
 .save-status svg {
   color: #94b3a3;
 }
+.save-status-text.progressive {
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition:
+    max-width 0.16s ease,
+    opacity 0.16s ease;
+}
+.project-heading:hover .save-status-text.progressive,
+.project-heading:focus-within .save-status-text.progressive {
+  max-width: 230px;
+  opacity: 1;
+}
 .project-actions {
   display: flex;
   gap: 10px;
