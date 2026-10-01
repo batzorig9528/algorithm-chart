@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/server/db";
 import {
   createSession,
+  toAuthUser,
   findUserByEmail,
   SESSION_COOKIE,
   verifyPassword,
@@ -30,18 +31,18 @@ export async function POST(request: Request) {
   }
 
   try {
-    const record = findUserByEmail(db, email);
+    const record = await findUserByEmail(db, email);
     if (
       !record ||
-      !record.password_hash ||
-      !verifyPassword(password, record.password_hash)
+      !record.passwordHash ||
+      !verifyPassword(password, record.passwordHash)
     ) {
       return NextResponse.json(
         { error: "Имэйл эсвэл нууц үг буруу байна." },
         { status: 401 },
       );
     }
-    const { token } = createSession(db, record.id);
+    const { token } = await createSession(db, record.id);
     const store = await cookies();
     store.set(SESSION_COOKIE, token, {
       httpOnly: true,
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
       maxAge: 30 * 24 * 60 * 60,
     });
     return NextResponse.json({
-      user: { id: record.id, email: record.email },
+      user: toAuthUser(record),
     });
   } catch {
     return NextResponse.json(

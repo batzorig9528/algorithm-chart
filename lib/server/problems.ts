@@ -1,22 +1,12 @@
-import type Database from "better-sqlite3";
+import type { Db } from "@/lib/server/db";
+import type { Prisma } from "@/lib/generated/prisma/client";
 import type { Problem, ProblemInput } from "@/types/problem";
 
-type Row = {
-  id: number;
-  title: string;
-  description: string;
-  level: string;
-  tag: string;
-  blocks: string;
-  author_name: string | null;
-  author_email: string | null;
-  created_at: string;
-};
+type Row = Prisma.ProblemGetPayload<{
+  include: { author: { select: { name: true; email: true } } };
+}>;
 
-const SELECT_SQL = `
-  SELECT p.id, p.title, p.description, p.level, p.tag, p.blocks, p.created_at,
-         u.name AS author_name, u.email AS author_email
-  FROM problems p LEFT JOIN users u ON u.id = p.author_id`;
+const withAuthor = { author: { select: { name: true, email: true } } } as const;
 
 function toProblem(row: Row): Problem {
   return {
@@ -25,9 +15,9 @@ function toProblem(row: Row): Problem {
     description: row.description,
     level: row.level,
     tag: row.tag,
-    blocks: JSON.parse(row.blocks),
-    authorName: row.author_name ?? row.author_email,
-    createdAt: row.created_at,
+    blocks: row.blocks as Problem["blocks"],
+    authorName: row.author?.name ?? row.author?.email ?? null,
+    createdAt: row.createdAt.toISOString(),
   };
 }
 
@@ -63,27 +53,27 @@ export function parseProblemInput(
   return { ok: true, input };
 }
 
-export function listProblems(db: Database.Database): Problem[] {
-  const rows = db.prepare(`${SELECT_SQL} ORDER BY p.id`).all() as Row[];
+export async function listProblems(db: Db): Promise<Problem[]> {
+  const rows = await db.problem.findMany({
+    include: withAuthor,
+    orderBy: { id: "asc" },
+  });
   return rows.map(toProblem);
 }
 
-export function createProblem(
-  db: Database.Database,
+export async function createProblem(
+  db: Db,
   authorId: number,
   input: ProblemInput,
-): Problem {
-  const result = db
-    .prepare(
-      "INSERT INTO problems (title, description, level, tag, author_id) VALUES (?, ?, ?, ?, ?)",
-    )
-    .run(input.title, input.description, input.level, input.tag, authorId);
-  const row = db
-    .prepare(`${SELECT_SQL} WHERE p.id = ?`)
-    .get(result.lastInsertRowid) as Row;
+): Promise<Problem> {
+  const row = await db.problem.create({
+    data: { ...input, authorId },
+    include: withAuthor,
+  });
   return toProblem(row);
 }
 
-export function deleteProblem(db: Database.Database, id: number): boolean {
-  return db.prepare("DELETE FROM problems WHERE id = ?").run(id).changes > 0;
+export async function deleteProblem(db: Db, id: number): Promise<boolean> {
+  const { count } = await db.problem.deleteMany({ where: { id } });
+  return count > 0;
 }

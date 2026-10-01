@@ -19,7 +19,7 @@ export async function DELETE(
     );
   }
   const id = Number((await params).id);
-  if (!Number.isInteger(id) || !deleteProblem(db, id)) {
+  if (!Number.isInteger(id) || !(await deleteProblem(db, id))) {
     return NextResponse.json({ error: "Бодлого олдсонгүй." }, { status: 404 });
   }
   return NextResponse.json({ ok: true });

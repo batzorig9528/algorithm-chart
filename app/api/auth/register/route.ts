@@ -43,14 +43,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (findUserByEmail(db, email)) {
+    if (await findUserByEmail(db, email)) {
       return NextResponse.json(
         { error: "Энэ имэйлээр бүртгэл үүссэн байна." },
         { status: 409 },
       );
     }
-    const user = createUser(db, email, password);
-    const { token } = createSession(db, user.id);
+    const user = await createUser(db, email, password);
+    const { token } = await createSession(db, user.id);
     const store = await cookies();
     store.set(SESSION_COOKIE, token, {
       httpOnly: true,

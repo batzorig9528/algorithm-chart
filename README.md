@@ -4,10 +4,13 @@ Next.js, React, TypeScript дээрх Монгол интерфэйстэй ви
 
 ## Ажиллуулах
 
-Node.js 20.9+ шаардлагатай.
+Node.js 20.9+ болон PostgreSQL шаардлагатай.
 
 ```sh
-npm install
+cp .env.example .env        # DATABASE_URL-аа бөглөнө
+npm install                 # Prisma client-ийг автоматаар үүсгэнэ
+npm run db:migrate          # хүснэгтүүд үүсгэнэ
+npm run db:seed             # жишээ бодлогууд + (SEED_TEACHER_* байвал) багшийн аккаунт
 npm run dev
 ```
 
@@ -32,7 +35,19 @@ npm run dev -- --port 4327
 - Өмнөх ажлаа файлын цэсний “Өмнөх ажлыг нээх” товчоор сонгож сэргээх.
 - Засвар хийсний дараа LocalStorage-д автоматаар хадгалах, `.flow.json` экспорт/импорт (нэрийн хажуугийн цэс).
 
-Хадгалалт тухайн хөтөч, төхөөрөмжид хамаарна. Аккаунт, серверийн өгөгдлийн сан шаардлагагүй. Фонтууд апптай хамт үйлчлэгдэнэ.
+Схем тухайн хөтөч дээр хадгалагдана. Хэрэглэгч, сесс, бодлогын сан PostgreSQL (Prisma) дээр хадгалагдана. Фонтууд апптай хамт үйлчлэгдэнэ.
+
+## Үнэгүй хостинг дээр байршуулах (Vercel + Neon)
+
+SQLite файл serverless хост дээр хадгалагддаггүй тул PostgreSQL ашиглана.
+
+1. [neon.tech](https://neon.tech) дээр үнэгүй Postgres үүсгээд connection string-ээ хуулна.
+2. Repo-г [vercel.com](https://vercel.com)-д import хийнэ.
+3. Environment variables: `DATABASE_URL` (Neon-ийн pooled холболт), заавал биш `DIRECT_URL` (direct холболт, migration-д), `TEE_API_BASE_URL`.
+4. Deploy хийхэд `vercel-build` скрипт `prisma migrate deploy`-г автоматаар ажиллуулна.
+5. Эхний удаа seed хийх: өөрийн компьютер дээрээ `DATABASE_URL`, `SEED_TEACHER_EMAIL`, `SEED_TEACHER_PASSWORD`-ийг Neon-ийн утгаар тохируулаад `npm run db:seed`.
+
+Тест: `.env` дотор `TEST_DATABASE_URL` (тусдаа, цэвэрлэгдэх өгөгдлийн сан) тохируулбал `npm test` DB-тэй тестүүдийг ажиллуулна, үгүй бол алгасна.
 
 ## Илэрхийлэл
 

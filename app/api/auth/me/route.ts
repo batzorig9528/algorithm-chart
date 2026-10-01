@@ -6,7 +6,7 @@ import { getUserBySessionToken, SESSION_COOKIE } from "@/lib/server/auth";
 export async function GET() {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
-  const user = token ? getUserBySessionToken(db, token) : null;
+  const user = token ? await getUserBySessionToken(db, token) : null;
   if (!user) {
     return NextResponse.json({ error: "Нэвтрээгүй байна." }, { status: 401 });
   }

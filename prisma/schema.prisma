@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String?
+  passwordHash String?   @map("password_hash")
+  authSource   String    @default("local") @map("auth_source")
+  teeUserId    String?   @unique @map("tee_user_id")
+  // TEE.education role (TEACHER, STUDENT, ...) or one set by the seed script.
+  role         String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  sessions     Session[]
+  problems     Problem[]
+
+  @@map("users")
+}
+
+model Session {
+  token     String   @id
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Problem {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @default("")
+  level       String   @default("")
+  tag         String   @default("")
+  // Starter blocks (lib/flow Block[]); empty for teacher-written problems.
+  blocks      Json     @default("[]")
+  authorId    Int?     @map("author_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@map("problems")
+}

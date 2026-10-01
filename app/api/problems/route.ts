@@ -9,7 +9,7 @@ import {
 } from "@/lib/server/problems";
 
 export async function GET() {
-  return NextResponse.json({ problems: listProblems(db) });
+  return NextResponse.json({ problems: await listProblems(db) });
 }
 
 export async function POST(request: Request) {
@@ -28,6 +28,6 @@ export async function POST(request: Request) {
   if (!parsed.ok) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
-  const problem = createProblem(db, user.id, parsed.input);
+  const problem = await createProblem(db, user.id, parsed.input);
   return NextResponse.json({ problem }, { status: 201 });
 }

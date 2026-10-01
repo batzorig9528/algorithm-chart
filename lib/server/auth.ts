@@ -1,5 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
-import type Database from "better-sqlite3";
+import type { Db } from "@/lib/server/db";
 import type { AuthUser } from "@/types/auth";
 import type { TeeProfile } from "@/lib/server/tee";
 
@@ -33,101 +33,101 @@ export function verifyPassword(password: string, stored: string): boolean {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-export function createUser(
-  db: Database.Database,
+export async function createUser(
+  db: Db,
   email: string,
   password: string,
-): AuthUser {
+): Promise<AuthUser> {
   const normalized = normalizeEmail(email);
-  const result = db
-    .prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)")
-    .run(normalized, hashPassword(password));
-  return { id: Number(result.lastInsertRowid), email: normalized };
+  const user = await db.user.create({
+    data: { email: normalized, passwordHash: hashPassword(password) },
+  });
+  return { id: user.id, email: normalized };
 }
 
-export function findUserByEmail(
-  db: Database.Database,
-  email: string,
-): { id: number; email: string; password_hash: string | null } | undefined {
-  return db
-    .prepare("SELECT id, email, password_hash FROM users WHERE email = ?")
-    .get(normalizeEmail(email)) as
-    { id: number; email: string; password_hash: string | null } | undefined;
+export function findUserByEmail(db: Db, email: string) {
+  return db.user.findUnique({
+    where: { email: normalizeEmail(email) },
+    select: {
+      id: true,
+      email: true,
+      passwordHash: true,
+      name: true,
+      role: true,
+    },
+  });
 }
 
-export function upsertTeeUser(
-  db: Database.Database,
+export function toAuthUser(user: {
+  id: number;
+  email: string;
+  name?: string | null;
+  role?: string | null;
+}): AuthUser {
+  const result: AuthUser = { id: user.id, email: user.email };
+  if (user.name) result.name = user.name;
+  if (user.role) result.role = user.role;
+  return result;
+}
+
+export async function upsertTeeUser(
+  db: Db,
   profile: TeeProfile,
-): AuthUser {
+): Promise<AuthUser> {
   const email = normalizeEmail(profile.email);
-  const existing = db
-    .prepare("SELECT id FROM users WHERE email = ? OR tee_user_id = ?")
-    .get(email, profile.id) as { id: number } | undefined;
-  if (existing) {
-    db.prepare(
-      `UPDATE users SET name = ?, tee_user_id = ?, tee_role = ?,
-       auth_source = CASE WHEN auth_source = 'local' THEN 'both' ELSE auth_source END
-       WHERE id = ?`,
-    ).run(profile.name, profile.id, profile.role, existing.id);
-    return { id: existing.id, email, name: profile.name, role: profile.role };
-  }
-  const result = db
-    .prepare(
-      `INSERT INTO users (email, name, auth_source, tee_user_id, tee_role)
-       VALUES (?, ?, 'tee', ?, ?)`,
-    )
-    .run(email, profile.name, profile.id, profile.role);
-  return {
-    id: Number(result.lastInsertRowid),
-    email,
-    name: profile.name,
-    role: profile.role,
-  };
+  const existing = await db.user.findFirst({
+    where: { OR: [{ email }, { teeUserId: profile.id }] },
+  });
+  const user = existing
+    ? await db.user.update({
+        where: { id: existing.id },
+        data: {
+          name: profile.name,
+          teeUserId: profile.id,
+          role: profile.role,
+          authSource:
+            existing.authSource === "local" ? "both" : existing.authSource,
+        },
+      })
+    : await db.user.create({
+        data: {
+          email,
+          name: profile.name,
+          authSource: "tee",
+          teeUserId: profile.id,
+          role: profile.role,
+        },
+      });
+  return toAuthUser(user);
 }
 
-export function createSession(
-  db: Database.Database,
+export async function createSession(
+  db: Db,
   userId: number,
-): { token: string; expiresAt: string } {
+): Promise<{ token: string; expiresAt: Date }> {
   const token = randomBytes(32).toString("hex");
-  // Stored in SQLite's own datetime() text format so it sorts/compares correctly
-  // against datetime('now') in the lookup query below.
-  const expiresAt = new Date(Date.now() + SESSION_TTL_MS)
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
-  db.prepare(
-    "INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)",
-  ).run(token, userId, expiresAt);
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  await db.session.create({ data: { token, userId, expiresAt } });
   return { token, expiresAt };
 }
 
-export function getUserBySessionToken(
-  db: Database.Database,
+export async function getUserBySessionToken(
+  db: Db,
   token: string,
-): AuthUser | null {
-  db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run();
-  const row = db
-    .prepare(
-      `SELECT u.id as id, u.email as email, u.name as name, u.tee_role as role FROM sessions s
-       JOIN users u ON u.id = s.user_id
-       WHERE s.token = ? AND s.expires_at > datetime('now')`,
-    )
-    .get(token) as
-    | { id: number; email: string; name: string | null; role: string | null }
-    | undefined;
-  if (!row) return null;
-  const user: AuthUser = { id: row.id, email: row.email };
-  if (row.name) user.name = row.name;
-  if (row.role) user.role = row.role;
-  return user;
+): Promise<AuthUser | null> {
+  await db.session.deleteMany({ where: { expiresAt: { lte: new Date() } } });
+  const session = await db.session.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+  return session ? toAuthUser(session.user) : null;
+}
+
+export async function deleteSession(db: Db, token: string): Promise<void> {
+  await db.session.deleteMany({ where: { token } });
 }
 
 export function isTeacher(user: AuthUser | null): boolean {
   const role = user?.role?.toUpperCase();
   return role === "TEACHER" || role === "ADMIN";
-}
-
-export function deleteSession(db: Database.Database, token: string): void {
-  db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
 }

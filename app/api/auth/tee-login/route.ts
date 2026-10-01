@@ -1,7 +1,11 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/server/db";
-import { createSession, SESSION_COOKIE, upsertTeeUser } from "@/lib/server/auth";
+import {
+  createSession,
+  SESSION_COOKIE,
+  upsertTeeUser,
+} from "@/lib/server/auth";
 import { verifyTeeCredentials } from "@/lib/server/tee";
 
 export async function POST(request: Request) {
@@ -18,8 +22,12 @@ export async function POST(request: Request) {
     identifier?: unknown;
     password?: unknown;
   };
-  if (typeof identifier !== "string" || typeof password !== "string" ||
-      !identifier.trim() || !password) {
+  if (
+    typeof identifier !== "string" ||
+    typeof password !== "string" ||
+    !identifier.trim() ||
+    !password
+  ) {
     return NextResponse.json(
       { error: "Нэвтрэх нэр, нууц үгээ бөглөнө үү." },
       { status: 400 },
@@ -47,8 +55,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = upsertTeeUser(db, result.profile);
-    const { token } = createSession(db, user.id);
+    const user = await upsertTeeUser(db, result.profile);
+    const { token } = await createSession(db, user.id);
     const store = await cookies();
     store.set(SESSION_COOKIE, token, {
       httpOnly: true,
