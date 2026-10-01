@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   background: #fdfdff;
+  overflow-y: auto;
 }
 .sidebar-title {
   display: flex;
@@ -112,12 +113,28 @@
   font-size: 12px;
   font-weight: 700;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0;
+  transition: margin-bottom 0.16s ease;
 }
 .palette-item small {
   font-size: 10px;
   color: #a2a1ad;
   display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.16s ease,
+    opacity 0.16s ease;
+}
+.palette-item:hover:not(:disabled) strong,
+.palette-item:focus-visible strong {
+  margin-bottom: 5px;
+}
+.palette-item:hover:not(:disabled) small,
+.palette-item:focus-visible small {
+  max-height: 5em;
+  opacity: 1;
 }
 .drag-grip {
   margin-left: auto;
