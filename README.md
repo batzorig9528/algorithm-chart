@@ -47,7 +47,7 @@ SQLite файл serverless хост дээр хадгалагддаггүй ту
 4. Deploy хийхэд `vercel-build` скрипт `prisma migrate deploy`-г автоматаар ажиллуулна.
 5. Эхний удаа seed хийх: өөрийн компьютер дээрээ `DATABASE_URL`, `SEED_TEACHER_EMAIL`, `SEED_TEACHER_PASSWORD`-ийг Neon-ийн утгаар тохируулаад `npm run db:seed`.
 
-Тест: `.env` дотор `TEST_DATABASE_URL` (тусдаа, цэвэрлэгдэх өгөгдлийн сан) тохируулбал `npm test` DB-тэй тестүүдийг ажиллуулна, үгүй бол алгасна.
+Тест: `npm test` нь `DATABASE_URL`-г ашиглана. Тест бүх хүснэгтийг цэвэрлэдэг тул `DATABASE_URL` локал (localhost) Postgres үед л DB-тэй тестүүд ажиллана, үгүй бол алгасна (мэдсээр байж хүчээр ажиллуулах бол `ALLOW_REMOTE_TEST_DB=1`).
 
 ## Илэрхийлэл
 

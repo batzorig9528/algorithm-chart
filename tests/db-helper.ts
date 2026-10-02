@@ -2,14 +2,23 @@ import "dotenv/config";
 import { test, after } from "node:test";
 import { createDb, type Db } from "../lib/server/db";
 
-const url = process.env.TEST_DATABASE_URL;
-if (url && url === process.env.DATABASE_URL)
-  throw new Error(
-    "TEST_DATABASE_URL must differ from DATABASE_URL: tests wipe it.",
-  );
+const url = process.env.DATABASE_URL;
 
-// DB tests need a throw-away Postgres database; without one they are skipped.
-export const dbTest = url ? test : test.skip;
+// The tests TRUNCATE every table, so they only run against a local database
+// unless ALLOW_REMOTE_TEST_DB=1 is set explicitly.
+export const isDbTestSafe = (u: string | undefined): u is string => {
+  if (!u) return false;
+  if (process.env.ALLOW_REMOTE_TEST_DB === "1") return true;
+  try {
+    return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(
+      new URL(u).hostname,
+    );
+  } catch {
+    return false;
+  }
+};
+
+export const dbTest = isDbTestSafe(url) ? test : test.skip;
 
 let shared: Db | undefined;
 export async function freshDb(): Promise<Db> {
