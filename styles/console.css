@@ -1,8 +1,8 @@
 .console-panel {
   height: 183px;
   flex-shrink: 0;
-  border-top: 1px solid #e8e4ef;
-  background: #fff;
+  border-top: 1px solid var(--k52);
+  background: var(--k6);
   display: flex;
   flex-direction: column;
 }
@@ -13,28 +13,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f0edf4;
+  border-bottom: 1px solid var(--k53);
 }
 .console-header > div {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #8a7f99;
+  color: var(--k54);
 }
 .console-header strong {
-  font-size: 10px;
-  color: #766580;
+  font-size: 11px;
+  color: var(--k55);
   font-weight: 700;
 }
 .console-header > div > span {
-  font-size: 9px;
-  color: #b4a7bf;
+  font-size: 11px;
+  color: var(--k56);
   margin-left: 8px;
 }
 .console-count {
-  font-size: 8px;
-  background: #f3edf8;
-  color: #9e82b3;
+  font-size: 11px;
+  background: var(--k57);
+  color: var(--k58);
   padding: 2px 5px;
   border-radius: 4px;
 }
@@ -57,30 +57,30 @@
   border-radius: 10px;
   display: grid;
   place-items: center;
-  border: 1px solid #ede7f2;
-  background: #faf8fd;
-  color: #b2a0c5;
+  border: 1px solid var(--k59);
+  background: var(--k60);
+  color: var(--k61);
 }
 .console-empty p {
   font-size: 11px;
-  color: #9c8bab;
+  color: var(--k62);
   margin-bottom: 7px;
 }
 .console-empty > div > span {
-  font-size: 9px;
-  color: #b9acc5;
+  font-size: 11px;
+  color: var(--k63);
 }
 .console-empty > div > span b {
   font-weight: 600;
-  color: #a18bad;
+  color: var(--k64);
 }
 .empty-play {
   margin-left: auto;
-  color: #c8bcd1;
-  border: 1px solid #f0eaf5;
+  color: var(--k65);
+  border: 1px solid var(--k66);
   border-radius: 5px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -94,12 +94,12 @@
   gap: 12px;
   align-items: baseline;
   font-size: 11px;
-  color: #a99ab9;
+  color: var(--k67);
   line-height: 1.9;
 }
 .log-line > span {
   width: 10px;
-  color: #b9acc7;
+  color: var(--k68);
 }
 .log-line pre {
   font-family: var(--mono);
@@ -108,63 +108,63 @@
   overflow-wrap: anywhere;
 }
 .log-line.output {
-  color: #685179;
+  color: var(--k69);
   font-weight: 500;
   font-size: 13px;
 }
 .log-line.input {
-  color: #8c9abb;
+  color: var(--k70);
 }
 .log-line.success {
-  color: #7da18c;
-  font-size: 9px;
+  color: var(--k71);
+  font-size: 11px;
 }
 .log-line.error {
-  color: #cb748b;
+  color: var(--k72);
 }
 .log-line.system {
-  font-size: 9px;
+  font-size: 11px;
 }
 .console-input {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #8d6cab;
+  color: var(--k73);
   margin: 6px 0;
   font-family: var(--mono);
   font-size: 11px;
 }
 .console-input input {
   border: 0;
-  border-bottom: 1px solid #d4c2e2;
+  border-bottom: 1px solid var(--k74);
   padding: 6px 3px;
   width: 250px;
   font-size: 11px;
   background: transparent;
-  color: #745788;
+  color: var(--k75);
   outline: none;
 }
 .console-input input::placeholder {
-  color: #bcacc9;
+  color: var(--k76);
   font-family: var(--font);
-  font-size: 10px;
+  font-size: 11px;
 }
 .console-input button {
-  color: #9572b1;
+  color: var(--k77);
   display: grid;
   place-items: center;
 }
 .statusbar {
   height: 29px;
   flex-shrink: 0;
-  border-top: 1px solid #eee8f3;
+  border-top: 1px solid var(--k78);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  font-size: 8px;
-  color: #b5a7c3;
-  background: #fdfcfe;
+  font-size: 11px;
+  color: var(--k79);
+  background: var(--k80);
 }
 .statusbar > span {
   display: flex;
@@ -173,8 +173,22 @@
 }
 .footer-divider {
   margin: 0 7px;
-  color: #e1d8e9;
+  color: var(--k81);
 }
 .made-with {
-  color: #bdaccb;
+  color: var(--k82);
+}
+.console-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.console-panel.collapsed {
+  height: auto;
+}
+.console-panel.collapsed .console-header {
+  border-bottom: 0;
+}
+.console-header {
+  padding-right: 62px;
 }

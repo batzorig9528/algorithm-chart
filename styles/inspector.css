@@ -4,7 +4,7 @@
   border-left: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--k6);
 }
 .inspector-tabs {
   height: 50px;
@@ -19,15 +19,15 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
-  color: #a09aa9;
+  color: var(--k137);
   border-bottom: 2px solid transparent;
   padding: 0;
 }
 .inspector-tabs button.active {
-  color: #8870c3;
-  border-bottom-color: #8b71cd;
+  color: var(--k125);
+  border-bottom-color: var(--k126);
 }
 .inspector-content {
   padding: 23px 18px;
@@ -40,27 +40,27 @@
   justify-content: space-between;
   font-size: 11px;
   font-weight: 700;
-  color: #6b6279;
+  color: var(--k138);
 }
 .inspector-heading > span {
   padding: 3px 6px;
   border-radius: 4px;
-  background: #f3f1f7;
-  font-size: 9px;
-  color: #a199ac;
+  background: var(--k139);
+  font-size: 11px;
+  color: var(--k140);
   font-weight: 600;
 }
 .muted {
-  color: #a7a0b0;
+  color: var(--k141);
 }
 .inspector-description {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.8;
   margin-top: 7px;
   margin-bottom: 21px;
 }
 .variable-table {
-  font-size: 10px;
+  font-size: 11px;
 }
 .variable-row {
   display: grid;
@@ -68,20 +68,20 @@
   gap: 6px;
   align-items: center;
   min-height: 42px;
-  border-bottom: 1px solid #f0edf3;
+  border-bottom: 1px solid var(--k142);
 }
 .variable-row > span:first-child {
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: var(--mono);
-  color: #80708f;
+  color: var(--k143);
 }
 .variable-symbol {
-  font-size: 9px;
+  font-size: 11px;
   font-style: italic;
-  color: #a999bf;
-  background: #f4f0f9;
+  color: var(--k144);
+  background: var(--k145);
   border-radius: 4px;
   width: 18px;
   height: 18px;
@@ -89,30 +89,30 @@
   place-items: center;
 }
 .variable-row > span:nth-child(2) {
-  color: #aaa1b5;
-  font-size: 9px;
+  color: var(--k146);
+  font-size: 11px;
 }
 .variable-row > code {
   font-family: var(--mono);
-  font-size: 10px;
-  color: #b9b0c3;
+  font-size: 11px;
+  color: var(--k147);
   text-align: right;
   padding-right: 7px;
   overflow-wrap: anywhere;
 }
 .variable-row > code.has-value {
-  color: #7a62b9;
+  color: var(--k148);
   font-weight: 600;
 }
 .variable-row.table-head {
   min-height: 28px;
-  color: #aaa0b6;
-  font-size: 8px;
+  color: var(--k149);
+  font-size: 11px;
 }
 .variable-row.table-head > span {
   font-family: var(--font);
-  font-size: 8px;
-  color: #aaa0b6;
+  font-size: 11px;
+  color: var(--k149);
 }
 .variable-row.table-head > span:last-child {
   justify-self: end;
@@ -122,11 +122,11 @@
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  background: #faf8fd;
-  border: 1px solid #f0eaf7;
+  background: var(--k60);
+  border: 1px solid var(--k150);
   padding: 12px 10px;
   border-radius: 7px;
-  color: #ae9ac7;
+  color: var(--k151);
   margin-top: 25px;
 }
 .info-note > svg {
@@ -134,22 +134,22 @@
   margin-top: 2px;
 }
 .info-note p {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.9;
-  color: #b0a2bf;
+  color: var(--k152);
 }
 .info-note b {
   display: block;
-  color: #9c87b6;
-  font-size: 9px;
+  color: var(--k153);
+  font-size: 11px;
   font-weight: 650;
   margin-bottom: 4px;
 }
 .execution-settings {
   padding: 16px 19px;
   border-top: 1px solid var(--line);
-  font-size: 9px;
-  color: #a298af;
+  font-size: 11px;
+  color: var(--k154);
 }
 .execution-settings > div {
   display: flex;
@@ -168,32 +168,32 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #8db79d;
+  background: var(--k155);
   flex-shrink: 0;
 }
 .status-dot.running {
-  background: #8c6fe0;
+  background: var(--k156);
   animation: pulse 1s infinite;
 }
 .status-dot.input,
 .status-dot.paused {
-  background: #d3ac65;
+  background: var(--k157);
 }
 .status-dot.error {
-  background: #d47979;
+  background: var(--k158);
 }
 .execution-settings label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 11px;
 }
 .execution-settings select {
-  color: #9686aa;
-  background: white;
-  border: 1px solid #ece6f1;
+  color: var(--k159);
+  background: var(--k41);
+  border: 1px solid var(--k160);
   border-radius: 4px;
-  font-size: 9px;
+  font-size: 11px;
   padding: 3px 5px;
   min-width: 56px;
 }

@@ -1,7 +1,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: #2a213e40;
+  background: var(--k169);
   backdrop-filter: blur(5px);
   z-index: 50;
   display: flex;
@@ -11,10 +11,10 @@
 }
 .modal {
   position: relative;
-  background: #fff;
-  border: 1px solid #eee4f4;
+  background: var(--k6);
+  border: 1px solid var(--k170);
   border-radius: 18px;
-  box-shadow: 0 20px 90px #30204425;
+  box-shadow: 0 20px 90px var(--k171);
   width: 540px;
   max-width: 100%;
   padding: 39px;
@@ -30,21 +30,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.5px;
-  color: #a18bb7;
+  color: var(--k172);
   margin-bottom: 18px;
 }
 .modal h2 {
   font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.7px;
-  color: #60516f;
+  color: var(--k173);
   margin-bottom: 12px;
 }
 .modal > p {
   font-size: 11px;
-  color: #aa9cb7;
+  color: var(--k174);
   line-height: 1.9;
 }
 .examples-modal {
@@ -58,24 +58,24 @@
 }
 .example-card {
   text-align: left;
-  border: 1px solid #e9e1f0;
+  border: 1px solid var(--k175);
   border-radius: 11px;
   padding: 20px 17px;
-  background: #fefcff;
+  background: var(--k176);
   transition:
     transform 0.15s,
     border-color 0.15s;
 }
 .example-card:hover:not(:disabled) {
   transform: translateY(-3px);
-  border-color: #bfa8d5;
+  border-color: var(--k177);
 }
 .example-number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f1eafa;
-  color: #b19ac6;
+  background: var(--k178);
+  color: var(--k179);
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -83,44 +83,44 @@
   font-size: 16px;
 }
 .number-1 {
-  background: #eef5fa;
-  color: #95b0c6;
+  background: var(--k180);
+  color: var(--k181);
 }
 .number-2 {
-  background: #f9f2e5;
-  color: #c5b18f;
+  background: var(--k182);
+  color: var(--k183);
 }
 .example-level {
   float: right;
-  font-size: 8px;
-  color: #b1a0bd;
+  font-size: 11px;
+  color: var(--k184);
   margin-top: 13px;
 }
 .example-card h3 {
   font-size: 12px;
   margin: 22px 0 10px;
-  color: #8b749d;
+  color: var(--k185);
 }
 .example-card p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.8;
-  color: #b2a1bf;
+  color: var(--k186);
   min-height: 40px;
 }
 .example-card > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 8px;
-  color: #ad95bf;
-  border-top: 1px solid #eee7f4;
+  font-size: 11px;
+  color: var(--k187);
+  border-top: 1px solid var(--k121);
   padding-top: 15px;
   margin-top: 20px;
 }
 .modal > p.modal-footnote {
-  font-size: 9px;
+  font-size: 11px;
   margin-top: 20px;
-  color: #c0b0cb;
+  color: var(--k188);
 }
 .modal-actions {
   display: flex;
@@ -143,8 +143,8 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #f3edf9;
-  color: #ae92c3;
+  background: var(--k189);
+  color: var(--k190);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -152,20 +152,20 @@
 }
 .help-steps span {
   font-size: 11px;
-  color: #b29fc0;
+  color: var(--k191);
   line-height: 1.8;
 }
 .help-steps strong {
   display: block;
   font-size: 12px;
-  color: #9376a8;
+  color: var(--k192);
   margin-bottom: 4px;
 }
 .help-note {
   padding: 13px;
-  background: #fbf8fd;
-  font-size: 9px;
-  color: #ae95bf;
+  background: var(--k193);
+  font-size: 11px;
+  color: var(--k194);
   border-radius: 7px;
   margin-bottom: 22px;
   line-height: 1.9;

@@ -5,7 +5,7 @@ dialog.modal {
   color: var(--ink);
 }
 dialog.modal::backdrop {
-  background: #2a213e55;
+  background: var(--k110);
   backdrop-filter: blur(5px);
 }
 .modal-block-editor > p,
@@ -13,14 +13,14 @@ dialog.modal::backdrop {
 .auth-form > p {
   font-size: 11px;
   line-height: 1.9;
-  color: #a090b0;
+  color: var(--k111);
 }
 .modal-block-editor label,
 .problem-form label,
 .auth-form label {
   display: block;
   font-size: 12px;
-  color: #7d6b8b;
+  color: var(--k112);
   margin-top: 22px;
 }
 .modal-block-editor input,
@@ -32,10 +32,10 @@ dialog.modal::backdrop {
   width: 100%;
   margin-top: 9px;
   padding: 12px;
-  border: 1px solid #e5ddeb;
+  border: 1px solid var(--k113);
   border-radius: 8px;
-  background: #fdfbff;
-  color: #594968;
+  background: var(--k86);
+  color: var(--k114);
   font-size: 13px;
   resize: vertical;
 }
@@ -43,35 +43,35 @@ dialog.modal::backdrop {
   font-size: 11px;
 }
 .modal-block-editor .expression-help p {
-  font-size: 10px;
+  font-size: 11px;
 }
 .problem-form label > span {
-  font-size: 10px;
-  color: #b3a4be;
+  font-size: 11px;
+  color: var(--k115);
 }
 .problem-form > p.modal-footnote,
 .auth-form > p.modal-footnote {
-  font-size: 10px;
+  font-size: 11px;
   margin-top: 17px;
 }
 .form-error {
   font-size: 11px !important;
   line-height: 1.8;
-  color: #b74969 !important;
-  background: #fff1f4;
-  border: 1px solid #f3d5df;
+  color: var(--k116) !important;
+  background: var(--k117);
+  border: 1px solid var(--k118);
   border-radius: 6px;
   padding: 9px 12px;
   margin-top: 15px;
 }
 .modal-actions .danger-button {
   margin-right: auto;
-  color: #be718c;
-  border-color: #f1dbe3;
+  color: var(--k119);
+  border-color: var(--k120);
 }
 .problem-card {
-  background: #faf8fd;
-  border: 1px solid #eee7f4;
+  background: var(--k60);
+  border: 1px solid var(--k121);
   border-radius: 8px;
   padding: 13px;
   margin-bottom: 24px;
@@ -83,18 +83,18 @@ dialog.modal::backdrop {
   gap: 8px;
 }
 .problem-card strong {
-  font-size: 10px;
-  color: #8b75a1;
+  font-size: 11px;
+  color: var(--k122);
 }
 .problem-card button {
-  color: #977abd;
-  font-size: 9px;
+  color: var(--k123);
+  font-size: 11px;
   padding: 3px 0;
 }
 .problem-card p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.9;
-  color: #a491b3;
+  color: var(--k124);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-height: 160px;
@@ -106,8 +106,8 @@ dialog.modal::backdrop {
   align-items: center;
   gap: 7px;
   font-size: 11px;
-  color: #8870c3;
-  border-bottom: 2px solid #8b71cd;
+  color: var(--k125);
+  border-bottom: 2px solid var(--k126);
 }
 .empty-workspace {
   text-align: center;
@@ -120,31 +120,31 @@ dialog.modal::backdrop {
   place-items: center;
   width: 46px;
   height: 46px;
-  background: #f1edfc;
-  border: 1px solid #e7def5;
+  background: var(--k127);
+  border: 1px solid var(--k128);
   border-radius: 14px;
-  color: #9b80c5;
+  color: var(--k129);
   margin-bottom: 13px;
 }
 .empty-workspace h3 {
   font-size: 14px;
-  color: #7d6795;
+  color: var(--k130);
 }
 .empty-workspace p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.9;
-  color: #a596b6;
+  color: var(--k131);
   margin: 9px 0 14px;
 }
 .empty-workspace .button {
-  color: #9676bd;
-  border-color: #e6dcf0;
+  color: var(--k132);
+  border-color: var(--k133);
 }
 .custom-problem-button {
   margin-top: 20px;
-  color: #8564b0;
-  background: #f7f1ff;
-  border-color: #e7daf6;
+  color: var(--k134);
+  background: var(--k135);
+  border-color: var(--k136);
   width: 100%;
   justify-content: flex-start;
   height: 43px;
@@ -172,24 +172,24 @@ dialog.modal::backdrop {
     font-size: 11px;
   }
   .empty-workspace p {
-    font-size: 9px;
+    font-size: 11px;
   }
   .empty-workspace .button {
-    font-size: 9px;
+    font-size: 11px;
     padding: 0 8px;
   }
   .problem-card {
     padding: 9px;
   }
   .problem-card p {
-    font-size: 8px;
+    font-size: 11px;
     max-height: 100px;
   }
   .problem-card strong {
-    font-size: 9px;
+    font-size: 11px;
   }
   .inspector-tab-label {
-    font-size: 9px;
+    font-size: 11px;
   }
   .modal {
     padding: 32px 20px 24px;
@@ -198,10 +198,10 @@ dialog.modal::backdrop {
     gap: 6px;
   }
   .modal-actions .button {
-    font-size: 10px;
+    font-size: 11px;
     padding: 0 10px;
   }
   .modal-block-editor .expression-help {
-    font-size: 10px;
+    font-size: 11px;
   }
 }

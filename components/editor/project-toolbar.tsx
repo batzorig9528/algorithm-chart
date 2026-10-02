@@ -1,6 +1,5 @@
 "use client";
 import {
-  CheckCheck,
   ChevronDown,
   Download,
   FolderOpen,
@@ -8,6 +7,7 @@ import {
   Shapes,
   Workflow,
 } from "lucide-react";
+import Link from "next/link";
 import { useState, useRef } from "react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
@@ -16,7 +16,6 @@ export function ProjectToolbar() {
   const {
     project,
     storageError,
-    hasChanges,
     hasSavedProject,
     restoreSavedProject,
     sidebar,
@@ -40,10 +39,14 @@ export function ProjectToolbar() {
             <Shapes size={19} />
           </IconButton>
         )}
-        <span className="project-icon">
+        <Link
+          className="project-icon"
+          href="/problems"
+          aria-label="Бодлогын сан"
+        >
           <Workflow size={20} />
-        </span>
-        <div>
+        </Link>
+        <div className="project-fields">
           <div className="title-row">
             <input
               aria-label="Алгоритмын нэр"
@@ -60,14 +63,23 @@ export function ProjectToolbar() {
               <ChevronDown size={14} />
             </button>
           </div>
-          <span className="save-status">
-            <CheckCheck size={12} />
-            {storageError
-              ? "Хадгалах боломжгүй · Файл татаж аваарай"
-              : hasChanges
-                ? "Энэ төхөөрөмжид хадгалагдсан"
-                : "Хоосон схем · Блокоос эхлээрэй"}
-          </span>
+          <textarea
+            className="project-description"
+            aria-label="Нөхцөл"
+            value={project.description ?? ""}
+            disabled={busy}
+            maxLength={5000}
+            rows={1}
+            placeholder="Бодлогын нөхцөл..."
+            onChange={(e) =>
+              commit({ ...project, description: e.target.value })
+            }
+          />
+          {storageError && (
+            <span className="save-status">
+              Хадгалах боломжгүй · Файл татаж аваарай
+            </span>
+          )}
         </div>
       </div>
       <div className="project-actions">

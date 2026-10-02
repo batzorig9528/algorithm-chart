@@ -1,14 +1,10 @@
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export function HelpGuide() {
   return (
     <main className="content-page">
       <section className="content-card help-card">
-        <span className="modal-eyebrow">
-          <Sparkles size={17} />
-          ЭХЛЭХЭД АМАРХАН
-        </span>
         <h1>Санаагаа алгоритм болгоё.</h1>
         <div className="help-steps">
           <div>

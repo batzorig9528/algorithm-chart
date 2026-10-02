@@ -6,30 +6,30 @@
   min-height: 0;
   overflow: auto;
   padding: 55px 32px;
-  background: #fbfafe;
+  background: var(--k195);
 }
 .content-card {
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px;
-  background: white;
-  border: 1px solid #ece5f4;
+  background: var(--k41);
+  border: 1px solid var(--k196);
   border-radius: 16px;
 }
 .content-card h1 {
   font-size: 28px;
-  color: #60516f;
+  color: var(--k173);
   margin: 0 0 14px;
   letter-spacing: -0.7px;
 }
 .content-card > p {
   font-size: 12px;
   line-height: 1.9;
-  color: #aa9cb7;
+  color: var(--k174);
 }
 .content-card .modal-footnote {
   margin-top: 24px;
-  font-size: 10px;
+  font-size: 11px;
 }
 .content-card.help-card {
   max-width: 680px;
@@ -60,10 +60,10 @@
   width: 100%;
   margin-top: 9px;
   padding: 12px;
-  border: 1px solid #e5ddeb;
+  border: 1px solid var(--k113);
   border-radius: 8px;
-  background: #fdfbff;
-  color: #594968;
+  background: var(--k86);
+  color: var(--k114);
   font-size: 13px;
 }
 .dashboard-list {
@@ -79,15 +79,22 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 16px;
-  border: 1px solid #e9e1f0;
+  border: 1px solid var(--k175);
   border-radius: 10px;
 }
 .dashboard-list strong {
   display: block;
   font-size: 13px;
-  color: #7d6b8b;
+  color: var(--k112);
 }
 .dashboard-list small {
-  font-size: 10px;
-  color: #b2a1bf;
+  font-size: 11px;
+  color: var(--k186);
+}
+.example-card p,
+.example-level {
+  color: var(--muted);
+}
+.example-level {
+  font-size: 11px;
 }

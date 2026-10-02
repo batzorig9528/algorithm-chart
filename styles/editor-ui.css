@@ -1,7 +1,7 @@
 .block-editor label {
   display: block;
-  font-size: 10px;
-  color: #9c89ac;
+  font-size: 11px;
+  color: var(--k84);
   margin-top: 17px;
 }
 .block-editor input,
@@ -9,24 +9,24 @@
   display: block;
   width: 100%;
   padding: 9px 10px;
-  border: 1px solid #e8dfef;
-  background: #fdfbff;
+  border: 1px solid var(--k85);
+  background: var(--k86);
   border-radius: 6px;
   font-family: var(--mono);
   font-size: 12px;
-  color: #786287;
+  color: var(--k87);
   margin-top: 8px;
   resize: vertical;
 }
 .expression-help {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.9;
-  color: #b5a5c2;
+  color: var(--k88);
   margin-top: 18px;
 }
 .expression-help > code {
   display: block;
-  color: #a28ab4;
+  color: var(--k89);
 }
 .expression-help p {
   margin-top: 10px;
@@ -36,9 +36,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 10px;
-  color: #c08b9c;
-  border: 1px solid #f2e2e8;
+  font-size: 11px;
+  color: var(--k90);
+  border: 1px solid var(--k91);
   border-radius: 6px;
   padding: 9px;
   margin-top: 24px;
@@ -47,40 +47,40 @@
 .select-prompt {
   text-align: center;
   padding: 55px 0;
-  color: #c4b5d0;
+  color: var(--k92);
 }
 .select-prompt h3 {
   font-size: 12px;
-  color: #a08aad;
+  color: var(--k93);
   margin: 15px 0 8px;
 }
 .select-prompt p {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.8;
-  color: #b4a3c0;
+  color: var(--k94);
 }
 .empty-small {
-  font-size: 10px;
-  color: #b0a1bc;
+  font-size: 11px;
+  color: var(--k95);
   padding: 20px 0;
 }
 .code-view {
   margin: 62px 35px;
-  background: #fff;
-  border: 1px solid #e4deed;
+  background: var(--k6);
+  border: 1px solid var(--k96);
   border-radius: 9px;
-  box-shadow: 0 4px 24px #4b336307;
+  box-shadow: 0 4px 24px var(--k97);
   min-width: 350px;
 }
 .code-view > div {
   height: 44px;
   padding: 0 17px;
-  border-bottom: 1px solid #eee8f4;
+  border-bottom: 1px solid var(--k98);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ae94bc;
-  font-size: 10px;
+  color: var(--k99);
+  font-size: 11px;
 }
 .code-file {
   display: flex;
@@ -92,15 +92,15 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #a68bb7;
-  font-size: 9px;
+  color: var(--k100);
+  font-size: 11px;
 }
 .code-view pre {
   padding: 20px 0;
   line-height: 2;
   font-family: var(--mono);
   font-size: 12px;
-  color: #8c6aa3;
+  color: var(--k101);
   overflow: auto;
 }
 .code-view pre em {
@@ -109,8 +109,8 @@
   width: 40px;
   text-align: right;
   margin-right: 25px;
-  color: #cdbdd8;
-  font-size: 10px;
+  color: var(--k102);
+  font-size: 11px;
   user-select: none;
 }
 .file-menu {
@@ -118,10 +118,10 @@
   left: 230px;
   top: 70px;
   z-index: 30;
-  background: white;
-  box-shadow: 0 7px 25px #44305420;
+  background: var(--k41);
+  box-shadow: 0 7px 25px var(--k103);
   padding: 6px;
-  border: 1px solid #e8dff0;
+  border: 1px solid var(--k104);
   border-radius: 8px;
   min-width: 170px;
 }
@@ -130,13 +130,13 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: #947ca5;
+  color: var(--k105);
   padding: 10px;
   width: 100%;
   border-radius: 5px;
 }
 .file-menu button:hover {
-  background: #f6f1fb;
+  background: var(--k106);
 }
 .toast {
   position: fixed;
@@ -147,10 +147,10 @@
   align-items: center;
   gap: 9px;
   padding: 12px 20px;
-  background: #5e4a74;
-  color: #fff;
+  background: var(--k107);
+  color: var(--k108);
   border-radius: 8px;
-  box-shadow: 0 5px 25px #4d32552b;
+  box-shadow: 0 5px 25px var(--k109);
   font-size: 11px;
   z-index: 100;
   max-width: 90vw;

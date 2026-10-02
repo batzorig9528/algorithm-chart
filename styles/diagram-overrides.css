@@ -41,10 +41,10 @@
 }
 .kind-if.selected,
 .kind-if.executing {
-  background: #9a88dd;
+  background: var(--k31);
 }
 .kind-if.executing:after {
-  background: #f1e5ff;
+  background: var(--k83);
 }
 @media (max-width: 800px) {
   .diagram {

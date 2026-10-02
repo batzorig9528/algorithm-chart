@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight, FilePlus2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { Modal } from "@/components/ui/modal";
 
@@ -16,16 +16,9 @@ export function ProblemDialog() {
   return (
     <Modal onClose={() => setModal(null)}>
       <form className="problem-form" onSubmit={saveProblem}>
-        <span className="modal-eyebrow">
-          <FilePlus2 size={17} />
-          ТАНЫ БОДЛОГО
-        </span>
         <h2 id="modal-title">
-          {modal === "new"
-            ? "Өөрийн бодлогоо бүтээе."
-            : "Бодлогын нөхцөл засах"}
+          {modal === "new" ? "Шинэ бодлого" : "Бодлогын нөхцөл"}
         </h2>
-        <p>Бодлогоо өөрөө тодорхойлж, блокуудыг чөлөөтэй угсраад ажиллуулна.</p>
         <label htmlFor="problem-title">
           Бодлогын нэр
           <input
@@ -58,11 +51,6 @@ export function ProblemDialog() {
         {formError && (
           <p className="form-error" role="alert">
             {formError}
-          </p>
-        )}
-        {modal === "new" && (
-          <p className="modal-footnote">
-            Одоогийн схемийг Буцаах товчоор сэргээж болно.
           </p>
         )}
         <div className="modal-actions">

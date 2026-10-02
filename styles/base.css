@@ -1,9 +1,9 @@
 :root {
-  --purple: #6b5ce7;
-  --purple-light: #f1effe;
-  --ink: #282937;
-  --muted: #91919e;
-  --line: #ececf2;
+  --purple: var(--k1);
+  --purple-light: var(--k2);
+  --ink: var(--k3);
+  --muted: var(--k4);
+  --line: var(--k5);
   --font: "Manrope", Arial, sans-serif;
   --mono: "IBM Plex Mono", monospace;
 }
@@ -15,7 +15,7 @@ body {
   color: var(--ink);
   font-family: var(--font);
   font-size: 13px;
-  background: #fff;
+  background: var(--k6);
 }
 button,
 input,
@@ -40,13 +40,13 @@ button {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #b4aaff;
+  outline: 3px solid var(--k7);
   outline-offset: 3px;
 }
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid #bcb2ff;
+  outline: 2px solid var(--k8);
   outline-offset: 2px;
 }
 button svg {

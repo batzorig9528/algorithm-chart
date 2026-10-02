@@ -1,20 +1,11 @@
 "use client";
-import { Braces, Lightbulb, Square } from "lucide-react";
+import { Braces, Square } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
 
 export function VariablesPanel() {
-  const {
-    project,
-    variableNames,
-    openProblem,
-    variables,
-    status,
-    speed,
-    setSpeed,
-    busy,
-    reset,
-  } = useEditor();
+  const { variableNames, variables, status, speed, setSpeed, busy, reset } =
+    useEditor();
 
   return (
     <aside className="inspector">
@@ -25,24 +16,9 @@ export function VariablesPanel() {
         </span>
       </div>
       <div className="inspector-content">
-        <div className="problem-card">
-          <div>
-            <strong>Бодлогын нөхцөл</strong>
-            <button disabled={busy} onClick={() => openProblem(false)}>
-              Засах
-            </button>
-          </div>
-          <p>
-            {project.description ||
-              "Өөрийн бодлогын нөхцөлийг бичээд, блокуудыг чөлөөтэй угсарч ажиллуулаарай."}
-          </p>
-        </div>
         <div className="inspector-heading">
           Хувьсагчдын утга<span>{variableNames.length}</span>
         </div>
-        <p className="muted inspector-description">
-          Ажиллуулах үед утгууд шинэчлэгдэнэ.
-        </p>
         <div className="variable-table">
           <div className="variable-row table-head">
             <span>Нэр</span>
@@ -73,15 +49,8 @@ export function VariablesPanel() {
           ))}
         </div>
         {variableNames.length === 0 && (
-          <p className="empty-small">Хувьсагчийн блок нэмээрэй.</p>
+          <p className="empty-small">Хувьсагч алга.</p>
         )}
-        <div className="info-note">
-          <Lightbulb size={17} />
-          <p>
-            <b>Утгуудыг ажиглаарай</b>Алхмаар ажиллуулж хувьсагч бүр хэрхэн
-            өөрчлөгдөхийг хараарай.
-          </p>
-        </div>
       </div>
       <div className="execution-settings">
         <div>

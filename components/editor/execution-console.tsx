@@ -1,6 +1,6 @@
 "use client";
-import { Play, Send, Terminal, Trash2 } from "lucide-react";
-import { useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp, Send, Terminal, Trash2 } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
 
@@ -15,41 +15,44 @@ export function ExecutionConsole() {
     submitInput,
   } = useEditor();
   const consoleEnd = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(true);
+  // New output or an input prompt reopens a collapsed console.
+  useEffect(() => {
+    if (logs.length > 0 || pendingInput) setOpen(true);
+  }, [logs.length, pendingInput]);
   useEffect(() => {
     consoleEnd.current?.scrollIntoView({ block: "nearest" });
   }, [logs, pendingInput]);
   return (
-    <section className="console-panel">
+    <section className={`console-panel ${open ? "" : "collapsed"}`}>
       <div className="console-header">
         <div>
           <Terminal size={16} />
           <strong>Консол</strong>
-          <span>Оролт / Гаралт</span>
           {logs.filter((l) => l.type === "output").length > 0 && (
             <b className="console-count">
               {logs.filter((l) => l.type === "output").length}
             </b>
           )}
         </div>
-        <IconButton title="Консол цэвэрлэх" onClick={() => setLogs([])}>
-          <Trash2 size={14} />
-        </IconButton>
+        <div className="console-actions">
+          <IconButton title="Консол цэвэрлэх" onClick={() => setLogs([])}>
+            <Trash2 size={14} />
+          </IconButton>
+          <IconButton
+            title={open ? "Консол хаах" : "Консол нээх"}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </IconButton>
+        </div>
       </div>
-      <div className="console-content" aria-live="polite">
+      <div className="console-content" aria-live="polite" hidden={!open}>
         {logs.length === 0 ? (
           <div className="console-empty">
-            <span className="terminal-icon">
-              <Terminal size={21} />
-            </span>
-            <div>
-              <p>Таны алгоритм амилж эхлэхэд бэлэн.</p>
-              <span>
-                <b>Ажиллуулах</b> товчийг дарж үр дүнг энд хараарай.
-              </span>
-            </div>
-            <span className="empty-play">
-              <Play size={12} /> Let’s make it flow
-            </span>
+            <p>
+              <b>Ажиллуулах</b> товчийг дарж үр дүнг энд харна.
+            </p>
           </div>
         ) : (
           <div className="console-logs">

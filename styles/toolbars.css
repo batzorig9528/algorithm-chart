@@ -5,12 +5,12 @@
   flex-direction: column;
 }
 .project-toolbar {
-  height: 90px;
+  min-height: 78px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 27px;
+  padding: 10px 27px;
   border-bottom: 1px solid var(--line);
   position: relative;
   gap: 12px;
@@ -24,12 +24,12 @@
 .project-icon {
   width: 40px;
   height: 40px;
-  border: 1px solid #e9e7f3;
+  border: 1px solid var(--k240);
   border-radius: 10px;
   display: grid;
   place-items: center;
-  background: #faf9fd;
-  color: #8b7fa9;
+  background: var(--k241);
+  color: var(--k242);
 }
 .title-row {
   display: flex;
@@ -39,27 +39,27 @@
 .title-row input {
   padding: 0;
   border: 0;
-  color: #3c3a49;
+  color: var(--k243);
   font-size: 15px;
   font-weight: 800;
-  width: 235px;
+  width: min(420px, 38vw);
   background: transparent;
   outline: none;
 }
 .title-menu {
-  color: #98959f;
+  color: var(--k244);
   padding: 3px;
 }
 .save-status {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #a4a1ac;
-  font-size: 9px;
+  color: var(--k245);
+  font-size: 11px;
   margin-top: 6px;
 }
 .save-status svg {
-  color: #94b3a3;
+  color: var(--k246);
 }
 .project-actions {
   display: flex;
@@ -77,20 +77,20 @@
   font-size: 11px;
   font-weight: 650;
   white-space: nowrap;
-  border: 1px solid #e6e5ed;
-  background: #fff;
-  color: #666270;
+  border: 1px solid var(--k247);
+  background: var(--k6);
+  color: var(--k248);
 }
 .button:hover:not(:disabled) {
-  background: #f7f5ff;
+  background: var(--k229);
 }
 .button.subtle {
   border-color: transparent;
   background: transparent;
-  color: #8c8998;
+  color: var(--k249);
 }
 .new-button {
-  font-size: 10px;
+  font-size: 11px;
   height: 34px;
 }
 .editor-toolbar {
@@ -117,12 +117,12 @@
   padding: 0 11px;
   border-radius: 6px;
   font-size: 11px;
-  color: #93909e;
+  color: var(--k250);
   font-weight: 600;
 }
 .view-tabs > button.active {
-  color: #7866c9;
-  background: #f3f0fb;
+  color: var(--k251);
+  background: var(--k252);
 }
 .run-tools {
   display: flex;
@@ -134,7 +134,7 @@
   gap: 2px;
 }
 .history-tools .icon-button {
-  color: #9b97a6;
+  color: var(--k253);
 }
 .tool-divider {
   width: 1px;
@@ -143,28 +143,57 @@
   margin: 0 5px;
 }
 .run-button {
-  color: white;
+  color: var(--k254);
   background: var(--purple);
   border-color: var(--purple);
-  box-shadow: 0 2px 4px #6b5ce71a;
+  box-shadow: 0 2px 4px var(--k255);
 }
 .run-button:hover:not(:disabled) {
-  background: #5c4dd8;
+  background: var(--k256);
 }
 .step-button {
-  border-color: #e7e4ed;
-  background: #fff;
-  color: #777080;
+  border-color: var(--k257);
+  background: var(--k6);
+  color: var(--k258);
   height: 33px;
-  font-size: 10px;
+  font-size: 11px;
 }
 .run-tools > .run-button {
   height: 33px;
-  font-size: 10px;
+  font-size: 11px;
   min-width: 119px;
 }
 .editor-body {
   display: flex;
   flex: 1;
   min-height: 0;
+}
+.project-fields {
+  min-width: 0;
+  flex: 1;
+}
+.project-heading {
+  flex: 1;
+}
+.project-description {
+  display: block;
+  width: min(760px, 100%);
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  field-sizing: content;
+  max-height: 6.4em;
+  overflow: auto;
+}
+.project-description:focus {
+  color: var(--ink);
+}
+.project-icon {
+  flex-shrink: 0;
 }

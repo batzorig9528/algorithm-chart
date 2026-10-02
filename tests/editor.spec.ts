@@ -4,7 +4,10 @@ test("run sum and restore an edited algorithm only when requested", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Бодлогын сан", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
+  await page
+    .getByRole("menuitem", { name: "Бодлогын сан", exact: true })
+    .click();
   await page.getByRole("button", { name: /Хоёр тооны нийлбэр/ }).click();
   await page.getByLabel("Алхмын хурд").selectOption("10");
   await page.getByRole("button", { name: "Ажиллуулах", exact: true }).click();
@@ -40,7 +43,10 @@ test("examples execute branches and loops; step, add, undo and export work", asy
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Бодлогын сан", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
+  await page
+    .getByRole("menuitem", { name: "Бодлогын сан", exact: true })
+    .click();
   await page.getByRole("button", { name: /1-ээс N хүртэлх нийлбэр/ }).click();
   await page.getByLabel("Алхмын хурд").selectOption("10");
   await page.getByRole("button", { name: "Алхмаар", exact: true }).click();
@@ -50,7 +56,10 @@ test("examples execute branches and loops; step, add, undo and export work", asy
   await page.getByRole("button", { name: "Үргэлжлүүлэх", exact: true }).click();
   await expect(page.locator(".log-line.output")).toContainText("55");
   await expect(page.locator(".log-line.success")).toBeVisible();
-  await page.getByRole("link", { name: "Бодлогын сан", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
+  await page
+    .getByRole("menuitem", { name: "Бодлогын сан", exact: true })
+    .click();
   await page.getByRole("button", { name: /Тэгш үү, сондгой юу/ }).click();
   await page.getByRole("button", { name: "Ажиллуулах", exact: true }).click();
   await page.locator("#runtime-input").fill("7");
@@ -98,7 +107,9 @@ test("create a personal problem, edit with modal, cancel, validate, run and expo
     .getByRole("textbox", { name: /Бодлогын нөхцөл/ })
     .fill("Талын урт n өгөгдвөл талбайг ол.");
   await page.getByRole("button", { name: "Блок угсарч эхлэх" }).click();
-  await expect(page.locator(".problem-card")).toContainText("Талын урт n");
+  await expect(page.getByLabel("Нөхцөл", { exact: true })).toHaveValue(
+    /Талын урт n/,
+  );
   await page.getByRole("button", { name: "Эхний блок нэмэх" }).click();
   await page
     .getByRole("textbox", { name: "Хувьсагчийн нэр", exact: true })
@@ -146,7 +157,9 @@ test("create a personal problem, edit with modal, cancel, validate, run and expo
   await page
     .getByRole("button", { name: "Өмнөх ажлыг нээх", exact: true })
     .click();
-  await expect(page.locator(".problem-card")).toContainText("Талын урт n");
+  await expect(page.getByLabel("Нөхцөл", { exact: true })).toHaveValue(
+    /Талын урт n/,
+  );
   await expect(page.locator(".flow-block")).toHaveCount(2);
 });
 
@@ -155,7 +168,7 @@ test("workspace routes preserve the project and paused execution across navigati
 }) => {
   await page.goto("/problems");
   await expect(
-    page.getByRole("heading", { name: "Дараагийн санаагаа эндээс." }),
+    page.getByRole("heading", { name: "Бодлогын сан" }),
   ).toBeVisible();
   await page.getByRole("button", { name: /Хоёр тооны нийлбэр/ }).click();
   await expect(page).toHaveURL(/\/editor$/);
@@ -164,7 +177,8 @@ test("workspace routes preserve the project and paused execution across navigati
   await page.locator("#runtime-input").fill("9");
   await page.locator("#runtime-input").press("Enter");
   await expect(page.getByText("Түр зогссон", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: "Тусламж", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Тусламж", exact: true }).click();
   await expect(page).toHaveURL(/\/help$/);
   await expect(
     page.getByRole("heading", { name: "Санаагаа алгоритм болгоё." }),

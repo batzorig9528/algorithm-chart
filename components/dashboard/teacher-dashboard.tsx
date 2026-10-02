@@ -1,6 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { LayoutDashboard, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useProblems } from "@/components/problems/use-problems";
 
@@ -61,7 +61,7 @@ export function TeacherDashboard() {
       <main className="content-page">
         <section className="content-card">
           <h1>Хяналтын самбар</h1>
-          <p>Энэ хуудсыг зөвхөн багш эрхээр нэвтэрсэн хэрэглэгч үзнэ.</p>
+          <p>Зөвхөн багш үзнэ.</p>
           {!user && (
             <button className="button" onClick={() => openModal("tee-login")}>
               Багшаар нэвтрэх
@@ -75,15 +75,7 @@ export function TeacherDashboard() {
   return (
     <main className="content-page">
       <section className="content-card">
-        <span className="modal-eyebrow">
-          <LayoutDashboard size={16} />
-          ХЯНАЛТЫН САМБАР
-        </span>
-        <h1>Бодлогын сан удирдах</h1>
-        <p>
-          Эндээс нэмсэн бодлого “Бодлогын сан” хуудсанд сурагчдад харагдана.
-          Нийт {problems.length} бодлого.
-        </p>
+        <h1>Хяналтын самбар</h1>
 
         <form className="problem-form dashboard-form" onSubmit={create}>
           <label htmlFor="dash-title">
@@ -97,7 +89,7 @@ export function TeacherDashboard() {
             />
           </label>
           <label htmlFor="dash-description">
-            Бодлогын нөхцөл
+            Нөхцөл
             <textarea
               id="dash-description"
               maxLength={5000}

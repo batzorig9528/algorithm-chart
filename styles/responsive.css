@@ -31,7 +31,7 @@
     width: 250px;
   }
   .project-toolbar {
-    padding: 0 32px;
+    padding: 10px 32px;
   }
   .editor-toolbar {
     padding: 0 28px;
@@ -53,7 +53,7 @@
     gap: 20px;
   }
   .project-toolbar {
-    padding: 0 20px;
+    padding: 10px 20px;
   }
   .editor-toolbar {
     padding: 0 15px;
@@ -95,7 +95,7 @@
     font-size: 11px;
   }
   .palette-item small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .console-panel {
     height: 165px;
@@ -125,11 +125,11 @@
     padding: 0 12px;
   }
   .inspector-tabs button {
-    font-size: 9px;
+    font-size: 11px;
   }
   .view-tabs > button {
     padding: 0 7px;
-    font-size: 10px;
+    font-size: 11px;
   }
   .history-tools {
     display: none;
@@ -141,7 +141,7 @@
     display: none;
   }
   .project-toolbar {
-    padding: 0 15px;
+    padding: 10px 15px;
   }
   .topbar {
     padding: 0 20px;
@@ -153,7 +153,7 @@
     padding: 0 9px;
   }
   .step-button {
-    font-size: 9px;
+    font-size: 11px;
     padding: 0 8px;
   }
   .run-tools > .run-button {
@@ -167,10 +167,10 @@
     padding: 13px;
   }
   .inspector-heading {
-    font-size: 10px;
+    font-size: 11px;
   }
   .inspector-description {
-    font-size: 8px;
+    font-size: 11px;
   }
   .empty-play {
     display: none;
@@ -186,10 +186,10 @@
     left: 16px;
   }
   .palette-note {
-    font-size: 9px;
+    font-size: 11px;
   }
   .guide-link {
-    font-size: 9px;
+    font-size: 11px;
   }
 }
 @media (max-width: 800px) {
@@ -227,19 +227,19 @@
     width: 165px;
   }
   .sidebar-description {
-    font-size: 8px;
+    font-size: 11px;
   }
   .section-label {
-    font-size: 8px;
+    font-size: 11px;
   }
   .palette-item {
     gap: 7px;
   }
   .palette-item strong {
-    font-size: 10px;
+    font-size: 11px;
   }
   .palette-item small {
-    font-size: 8px;
+    font-size: 11px;
   }
   .palette-icon {
     width: 29px;
@@ -249,14 +249,14 @@
     display: none;
   }
   .palette-note {
-    font-size: 8px;
+    font-size: 11px;
   }
   .main-workspace {
     min-height: calc(100dvh - 61px);
   }
   .project-toolbar {
-    height: 76px;
-    padding: 0 12px;
+    min-height: 76px;
+    padding: 10px 12px;
   }
   .project-icon {
     display: none;
@@ -275,7 +275,7 @@
     width: 14px;
   }
   .save-status {
-    font-size: 8px;
+    font-size: 11px;
   }
   .editor-toolbar {
     height: auto;
@@ -310,7 +310,7 @@
     padding: 20px 12px;
   }
   .statusbar {
-    font-size: 7px;
+    font-size: 11px;
     padding: 0 10px;
   }
   .statusbar .made-with {
@@ -327,10 +327,10 @@
     gap: 9px;
   }
   .console-empty p {
-    font-size: 10px;
+    font-size: 11px;
   }
   .console-empty > div > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .console-panel {
     height: 175px;
@@ -345,7 +345,7 @@
     max-width: 120px;
   }
   .inspector-description {
-    font-size: 8px;
+    font-size: 11px;
   }
   .top-navigation .avatar {
     width: 28px;
@@ -388,7 +388,7 @@
     padding: 0 9px;
   }
   .inspector-tabs button {
-    font-size: 8px;
+    font-size: 11px;
     gap: 4px;
   }
   .inspector-tabs button svg {
@@ -398,30 +398,30 @@
     padding: 16px 10px;
   }
   .inspector-heading {
-    font-size: 9px;
+    font-size: 11px;
   }
   .inspector-description {
-    font-size: 7px;
+    font-size: 11px;
     margin-bottom: 15px;
   }
   .variable-row {
     grid-template-columns: 1fr 0.9fr 0.5fr;
     gap: 4px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .variable-symbol {
     width: 13px;
     height: 15px;
-    font-size: 8px;
+    font-size: 11px;
   }
   .variable-row > span:first-child {
     gap: 4px;
   }
   .variable-row > span:nth-child(2) {
-    font-size: 7px;
+    font-size: 11px;
   }
   .variable-row > code {
-    font-size: 9px;
+    font-size: 11px;
     padding-right: 0;
   }
   .info-note {
@@ -433,17 +433,17 @@
   }
   .info-note p,
   .info-note b {
-    font-size: 8px;
+    font-size: 11px;
   }
   .execution-settings {
     padding: 12px 10px;
-    font-size: 8px;
+    font-size: 11px;
   }
   .execution-settings label {
-    font-size: 8px;
+    font-size: 11px;
   }
   .project-toolbar {
-    height: 72px;
+    min-height: 72px;
   }
   .project-heading {
     gap: 4px;
@@ -474,7 +474,7 @@
     width: 120px;
   }
   .canvas-caption {
-    font-size: 9px;
+    font-size: 11px;
     left: 12px;
   }
   .canvas-caption > span:last-child {
@@ -489,7 +489,7 @@
     padding: 1px;
   }
   .zoom-controls > span {
-    font-size: 9px;
+    font-size: 11px;
     min-width: 31px;
   }
   .zoom-controls .icon-button {
@@ -516,7 +516,7 @@
     height: 30px;
   }
   .run-tools > .run-button {
-    font-size: 9px;
+    font-size: 11px;
     min-width: 95px;
     height: 30px;
   }
@@ -524,7 +524,7 @@
     gap: 10px;
   }
   .statusbar > span:first-child {
-    font-size: 6.5px;
+    font-size: 11px;
   }
   .title-menu {
     padding: 2px;
@@ -534,20 +534,20 @@
   }
   .block-editor input,
   .block-editor textarea {
-    font-size: 10px;
+    font-size: 11px;
     padding: 8px;
   }
   .expression-help {
-    font-size: 8px;
+    font-size: 11px;
   }
   .select-prompt {
     padding: 45px 0;
   }
   .select-prompt h3 {
-    font-size: 10px;
+    font-size: 11px;
   }
   .select-prompt p {
-    font-size: 8px;
+    font-size: 11px;
   }
   .code-view {
     margin: 55px 15px;

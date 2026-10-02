@@ -1,19 +1,10 @@
 "use client";
-import {
-  ArrowRight,
-  BookOpen,
-  Grip,
-  MousePointer2,
-  PanelLeftClose,
-  Search,
-  Sparkles,
-} from "lucide-react";
+import { Grip, PanelLeftClose, Search } from "lucide-react";
 import { useState } from "react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
 import { icons } from "@/components/editor/block-icons";
 import { Kind, definitions } from "@/lib/flow";
-import Link from "next/link";
 
 export function BlockPalette() {
   const { setSidebar, insert, busy } = useEditor();
@@ -29,7 +20,6 @@ export function BlockPalette() {
           <PanelLeftClose size={16} />
         </IconButton>
       </div>
-      <p className="sidebar-description">Алгоритмаа алхам алхмаар бүтээ.</p>
       <label className="search-box">
         <Search size={15} />
         <input
@@ -40,9 +30,6 @@ export function BlockPalette() {
         />
         <kbd>⌕</kbd>
       </label>
-      <div className="section-label">
-        ҮНДСЭН БЛОКУУД <span>{Object.keys(definitions).length}</span>
-      </div>
       <div className="palette">
         {(Object.keys(definitions) as Kind[])
           .filter((k) =>
@@ -67,48 +54,11 @@ export function BlockPalette() {
                 </span>
                 <span>
                   <strong>{def.label}</strong>
-                  <small>{def.description}</small>
                 </span>
                 <Grip className="drag-grip" size={14} />
               </button>
             );
           })}
-      </div>
-      <div className="palette-note">
-        <MousePointer2 size={14} />
-        <span>
-          Блок дээр дарж эсвэл <b>+</b> тэмдэг рүү чирж нэмээрэй.
-        </span>
-      </div>
-      <div className="sidebar-bottom">
-        <div className="learn-card">
-          <span className="learn-icon">
-            <Sparkles size={18} />
-          </span>
-          <h3>
-            Бяцхан алхам.
-            <br />
-            Том боломж.
-          </h3>
-          <p>
-            Жишээ бодлогоос эхэлж,
-            <br />
-            алгоритмын сэтгэлгээгээ хөгжүүл.
-          </p>
-          <Link href="/problems">
-            Жишээ үзэх <ArrowRight size={14} />
-          </Link>
-          <div className="card-decoration">
-            <div />
-            <div />
-            <div />
-          </div>
-        </div>
-        <Link className="guide-link" href="/help">
-          <BookOpen size={15} />
-          Эхлэгчийн гарын авлага
-          <ArrowRight size={14} />
-        </Link>
       </div>
     </aside>
   );

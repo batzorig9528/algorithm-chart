@@ -16,11 +16,17 @@ export const metadata: Metadata = {
     "Блокоор алгоритм угсарч, алхам бүрээр ажиллуулан програмчлал сур.",
 };
 
+// Applies a saved theme before first paint so there is no light flash in dark mode.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="mn">
+    <html lang="mn" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <AuthProvider>
           {children}

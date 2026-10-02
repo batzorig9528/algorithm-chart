@@ -1,5 +1,5 @@
 "use client";
-import { LogIn, UserPlus, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { Modal } from "@/components/ui/modal";
 
@@ -21,12 +21,7 @@ export function AuthDialog() {
     return (
       <Modal onClose={() => setModal(null)}>
         <form className="auth-form" onSubmit={teeLogin}>
-          <span className="modal-eyebrow">
-            <GraduationCap size={17} />
-            TEE АКАУНТААР
-          </span>
           <h2 id="modal-title">TEE акаунтаар нэвтрэх</h2>
-          <p>Moodle нэвтрэх нэр эсвэл tee.education-д бүртгэлтэй имэйлээ ашиглана.</p>
           <label htmlFor="auth-identifier">
             Нэвтрэх нэр эсвэл имэйл
             <input
@@ -35,7 +30,9 @@ export function AuthDialog() {
               type="text"
               required
               value={draft.identifier}
-              onChange={(e) => setDraft({ ...draft, identifier: e.target.value })}
+              onChange={(e) =>
+                setDraft({ ...draft, identifier: e.target.value })
+              }
             />
           </label>
           <label htmlFor="auth-password">
@@ -74,13 +71,7 @@ export function AuthDialog() {
   return (
     <Modal onClose={() => setModal(null)}>
       <form className="auth-form" onSubmit={isLogin ? login : register}>
-        <span className="modal-eyebrow">
-          {isLogin ? <LogIn size={17} /> : <UserPlus size={17} />}
-          {isLogin ? "НЭВТРЭХ" : "БҮРТГҮҮЛЭХ"}
-        </span>
-        <h2 id="modal-title">
-          {isLogin ? "Дахин тавтай морил." : "Шинэ бүртгэл үүсгэе."}
-        </h2>
+        <h2 id="modal-title">{isLogin ? "Нэвтрэх" : "Бүртгүүлэх"}</h2>
         <label htmlFor="auth-email">
           Имэйл
           <input

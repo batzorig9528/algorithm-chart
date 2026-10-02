@@ -1,12 +1,5 @@
 "use client";
-import {
-  Maximize,
-  Minus,
-  MousePointer2,
-  Plus,
-  Square,
-  Workflow,
-} from "lucide-react";
+import { Maximize, Minus, Plus, Square, Workflow } from "lucide-react";
 import { useRef } from "react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
@@ -28,10 +21,6 @@ export function FlowCanvas() {
           }
         }}
       >
-        <div className="canvas-caption">
-          <span className="main-function-dot" />
-          Main<span>Үндсэн функц</span>
-        </div>
         {tab === "flow" ? (
           <div className="diagram" style={{ zoom: zoom / 100 }}>
             {project.blocks.length === 0 && (
@@ -39,11 +28,7 @@ export function FlowCanvas() {
                 <span>
                   <Workflow size={24} />
                 </span>
-                <h3>Өөрийн шийдлийг бүтээе</h3>
-                <p>
-                  Оролт, тооцоолол, нөхцөл, давталт —<br />
-                  ямар ч дарааллаар блокуудаа угсар.
-                </p>
+                <h3>Блок нэмж эхлээрэй</h3>
                 <button
                   className="button"
                   disabled={busy}
@@ -69,10 +54,7 @@ export function FlowCanvas() {
         )}
       </div>
       <div className="canvas-bottom">
-        <span className="canvas-tip">
-          <MousePointer2 size={13} />
-          Блок дээр дарж тохируулна
-        </span>
+        <span />
         <div className="zoom-controls">
           <IconButton
             title="Жижигрүүлэх"

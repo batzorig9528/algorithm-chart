@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight, BookOpen, Plus } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { useProblems } from "@/components/problems/use-problems";
 
@@ -10,12 +10,7 @@ export function ProblemLibrary() {
   return (
     <main className="content-page">
       <section className="content-card">
-        <span className="modal-eyebrow">
-          <BookOpen size={16} />
-          БОДЛОГЫН САН
-        </span>
-        <h1>Дараагийн санаагаа эндээс.</h1>
-        <p>Бэлэн жишээ сонгох эсвэл өөрийн бодлогыг эхнээс нь бүтээгээрэй.</p>
+        <h1>Бодлогын сан</h1>
         <button
           disabled={busy || !ready}
           className="button custom-problem-button"
@@ -45,16 +40,9 @@ export function ProblemLibrary() {
               <span className="example-level">{ex.level}</span>
               <h3>{ex.title}</h3>
               <p>{ex.description}</p>
-              <div>
-                {ex.tag}
-                <ArrowRight size={17} />
-              </div>
             </button>
           ))}
         </div>
-        <p className="modal-footnote">
-          Жишээ нээхэд одоогийн схем солигдоно. Буцаах товчоор сэргээж болно.
-        </p>
       </section>
     </main>
   );

@@ -2,12 +2,12 @@
   position: relative;
   flex: 1;
   min-width: 0;
-  background: #fbfbfd;
+  background: var(--k9);
 }
 .canvas {
   height: 100%;
   overflow: auto;
-  background-image: radial-gradient(#dad9e5 0.85px, transparent 0.85px);
+  background-image: radial-gradient(var(--k10) 0.85px, transparent 0.85px);
   background-size: 20px 20px;
   position: relative;
 }
@@ -19,21 +19,21 @@
   align-items: center;
   gap: 7px;
   font-family: var(--mono);
-  font-size: 10px;
-  color: #777083;
+  font-size: 11px;
+  color: var(--k11);
   z-index: 1;
 }
 .canvas-caption > span:last-child {
   font-family: var(--font);
   margin-left: 7px;
-  font-size: 9px;
-  color: #aaa6b5;
+  font-size: 11px;
+  color: var(--k12);
 }
 .main-function-dot {
   height: 6px;
   width: 6px;
   border-radius: 50%;
-  background: #a293bf;
+  background: var(--k13);
 }
 .diagram {
   display: flex;
@@ -57,21 +57,21 @@
   flex-shrink: 0;
 }
 .terminator.start {
-  border: 1px solid #c7dcca;
-  background: #edf5ee;
-  color: #65886c;
-  box-shadow: 0 2px 4px #65987307;
+  border: 1px solid var(--k14);
+  background: var(--k15);
+  color: var(--k16);
+  box-shadow: 0 2px 4px var(--k17);
 }
 .terminator.start > span {
   height: 7px;
   width: 7px;
   border-radius: 50%;
-  background: #83a789;
+  background: var(--k18);
 }
 .terminator.end {
-  background: #f0eff5;
-  border: 1px solid #dcd9e6;
-  color: #8f859f;
+  background: var(--k19);
+  border: 1px solid var(--k20);
+  color: var(--k21);
 }
 .flow-list,
 .flow-item {
@@ -84,7 +84,7 @@
   position: relative;
   width: 2px;
   height: 27px;
-  background: #d1cedc;
+  background: var(--k22);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,8 +97,8 @@
   left: -3px;
   width: 6px;
   height: 6px;
-  border-right: 1.5px solid #c7c3d3;
-  border-bottom: 1.5px solid #c7c3d3;
+  border-right: 1.5px solid var(--k23);
+  border-bottom: 1.5px solid var(--k23);
   transform: rotate(45deg);
 }
 .connector > button {
@@ -106,21 +106,21 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  background: #fbfbfd;
+  background: var(--k9);
   width: 14px;
   height: 14px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 1px solid #e0dce9;
-  color: #b8b2ca;
+  border: 1px solid var(--k24);
+  color: var(--k25);
   opacity: 0.8;
 }
 .connector:hover > button,
 .connector.open > button {
   opacity: 1;
-  background: #ece7fc;
-  border-color: #a392d7;
-  color: #8064c5;
+  background: var(--k26);
+  border-color: var(--k27);
+  color: var(--k28);
   transform: scale(1.15);
 }
 .flow-block {
@@ -134,20 +134,20 @@
   text-align: left;
   padding: 0 17px;
   position: relative;
-  box-shadow: 0 2px 3px #27243e03;
+  box-shadow: 0 2px 3px var(--k29);
   flex-shrink: 0;
 }
 .flow-block:hover {
-  box-shadow: 0 0 0 3px #9a83d311;
+  box-shadow: 0 0 0 3px var(--k30);
 }
 .flow-block.selected {
-  outline: 2px solid #9a88dd;
+  outline: 2px solid var(--k31);
   outline-offset: 3px;
 }
 .flow-block.executing {
-  outline: 3px solid #7e6cde;
+  outline: 3px solid var(--k32);
   outline-offset: 4px;
-  box-shadow: 0 0 18px #8e78e83a;
+  box-shadow: 0 0 18px var(--k33);
 }
 .block-icon {
   height: 28px;
@@ -155,7 +155,7 @@
   display: grid;
   place-items: center;
   border-radius: 5px;
-  background: #ffffff65;
+  background: var(--k34);
 }
 .block-content {
   display: flex;
@@ -164,7 +164,7 @@
   min-width: 0;
 }
 .block-content small {
-  font-size: 8px;
+  font-size: 11px;
   opacity: 0.75;
   letter-spacing: 0.3px;
   font-weight: 600;
@@ -177,7 +177,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 145px;
-  color: #514868;
+  color: var(--k35);
 }
 .block-dot {
   width: 4px;
@@ -221,7 +221,7 @@
   align-items: stretch;
   position: relative;
   padding: 0 22px;
-  border-bottom: 1px solid #d0cbdc;
+  border-bottom: 1px solid var(--k36);
   margin-top: 22px;
 }
 .branches:before {
@@ -230,14 +230,14 @@
   left: 50%;
   top: -22px;
   height: 22px;
-  border-left: 1px solid #d0cbdc;
+  border-left: 1px solid var(--k36);
 }
 .branch {
   padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-top: 1px solid #d0cbdc;
+  border-top: 1px solid var(--k36);
   position: relative;
 }
 .branch > .flow-list {
@@ -251,11 +251,11 @@
   position: absolute;
   top: -17px;
   left: calc(50% + 12px);
-  font-size: 8px;
-  color: #70a48b;
+  font-size: 11px;
+  color: var(--k37);
 }
 .branch-label.no {
-  color: #c18c95;
+  color: var(--k38);
 }
 .loop-return {
   position: absolute;
@@ -263,14 +263,14 @@
   height: calc(100% + 40px);
   bottom: 0;
   width: 70px;
-  border: 1px solid #dbc6d9;
+  border: 1px solid var(--k39);
   border-radius: 0 10px 10px 0;
   border-left: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  color: #b285a6;
-  font-size: 8px;
+  color: var(--k40);
+  font-size: 11px;
   gap: 5px;
   writing-mode: vertical-rl;
   padding: 15px 4px;
@@ -280,9 +280,9 @@
   top: 0;
   left: 18px;
   width: 150px;
-  background: white;
-  border: 1px solid #e7e1f3;
-  box-shadow: 0 6px 25px #37266520;
+  background: var(--k41);
+  border: 1px solid var(--k42);
+  box-shadow: 0 6px 25px var(--k43);
   border-radius: 8px;
   padding: 5px;
   z-index: 20;
@@ -293,13 +293,13 @@
   gap: 8px;
   width: 100%;
   padding: 9px;
-  font-size: 10px;
+  font-size: 11px;
   border-radius: 5px;
-  color: #71627f;
+  color: var(--k44);
   text-align: left;
 }
 .insert-menu button:hover {
-  background: #f2eef9;
+  background: var(--k45);
 }
 .canvas-bottom {
   position: absolute;
@@ -316,9 +316,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #aea8bc;
-  font-size: 9px;
-  background: #fbfbfdd9;
+  color: var(--k46);
+  font-size: 11px;
+  background: var(--k47);
   padding: 6px;
 }
 .zoom-controls {
@@ -326,10 +326,10 @@
   align-items: center;
   padding: 3px;
   gap: 2px;
-  background: white;
-  border: 1px solid #e6e2ec;
+  background: var(--k41);
+  border: 1px solid var(--k48);
   border-radius: 7px;
-  box-shadow: 0 3px 8px #36274706;
+  box-shadow: 0 3px 8px var(--k49);
   pointer-events: auto;
 }
 .zoom-controls .icon-button {
@@ -337,14 +337,14 @@
   height: 26px;
 }
 .zoom-controls > span {
-  font-size: 10px;
-  color: #8c8499;
+  font-size: 11px;
+  color: var(--k50);
   min-width: 39px;
   text-align: center;
 }
 .zoom-controls i {
   height: 14px;
   width: 1px;
-  background: #e7e2ec;
+  background: var(--k51);
   margin: 0 4px;
 }

@@ -10,7 +10,8 @@ test("register, see logged-in header, log out, log back in", async ({
   const password = "password123";
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Нэвтрэх", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Нэвтрэх", exact: true }).click();
   await page
     .getByRole("button", { name: "Бүртгэл үүсгэх", exact: true })
     .click();
@@ -20,19 +21,22 @@ test("register, see logged-in header, log out, log back in", async ({
     .locator(".auth-form")
     .getByRole("button", { name: "Бүртгүүлэх", exact: true })
     .click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
   await expect(page.getByTitle(email)).toBeVisible();
 
-  await page.getByRole("button", { name: "Гарах", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Гарах", exact: true }).click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Нэвтрэх", exact: true }),
+    page.getByRole("menuitem", { name: "Нэвтрэх", exact: true }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Нэвтрэх", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Нэвтрэх", exact: true }).click();
   await page.getByLabel("Имэйл").fill(email);
   await page.getByLabel("Нууц үг").fill(password);
   await page
     .locator(".auth-form")
     .getByRole("button", { name: "Нэвтрэх", exact: true })
     .click();
+  await page.getByRole("button", { name: "Цэс", exact: true }).click();
   await expect(page.getByTitle(email)).toBeVisible();
 });

@@ -1,4 +1,5 @@
 /* Shared design tokens and feature styles, in cascade order. */
+@import "../styles/theme.css";
 @import "../styles/base.css";
 @import "../styles/layout.css";
 @import "../styles/palette.css";
