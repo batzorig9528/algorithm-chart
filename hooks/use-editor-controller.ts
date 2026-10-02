@@ -135,13 +135,17 @@ export function useEditorController() {
     try {
       if (
         ["declare", "assign", "input", "for"].includes(b.kind) &&
-        (!/^[A-Za-z_]\w*$/.test(b.kind === "assign" ? targetName(b.name) : b.name) ||
+        (!/^[A-Za-z_]\w*$/.test(
+          b.kind === "assign" || b.kind === "input"
+            ? targetName(b.name)
+            : b.name,
+        ) ||
           ["true", "false"].includes(targetName(b.name)))
       )
         throw new Error(
           "Нэр латин үсэг эсвэл _-ээр эхэлнэ. true, false нэр ашиглахгүй.",
         );
-      if (b.kind === "assign") parseTarget(b.name);
+      if (b.kind === "assign" || b.kind === "input") parseTarget(b.name);
       if (b.kind === "for") {
         const [start, end, step] = splitForBounds(b.expression);
         if (!start || !end)

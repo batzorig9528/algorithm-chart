@@ -236,16 +236,31 @@ export function* execute(
 ): Generator<Frame, void, string | undefined> {
   const variables: Variables = Object.create(null);
   let steps = 0;
+  // Writes a variable, or one element of an array when the name is `a[i]`.
+  function store(name: string, value: Value) {
+    if (!name.includes("[")) {
+      if (!/^[A-Za-z_]\w*$/.test(name))
+        throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
+      variables[name] = value;
+      return;
+    }
+    const target = parseTarget(name);
+    const list = Object.hasOwn(variables, target.name)
+      ? variables[target.name]
+      : undefined;
+    if (!Array.isArray(list))
+      throw new Error(`“${target.name}” массив биш байна.`);
+    const next = [...list];
+    next[position(list, evaluateNode(target.index!, variables), true)] = value;
+    variables[target.name] = next;
+  }
   function* visit(list: Block[]): Generator<Frame, void, string | undefined> {
     for (const b of list) {
       if (++steps > 10000)
         throw new Error(
           "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
         );
-      if (
-        ["declare", "input", "for"].includes(b.kind) &&
-        !/^[A-Za-z_]\w*$/.test(b.name)
-      )
+      if (["declare", "for"].includes(b.kind) && !/^[A-Za-z_]\w*$/.test(b.name))
         throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
       if (b.kind === "input") {
         const value = yield {
@@ -255,26 +270,10 @@ export function* execute(
         };
         if (value === undefined || value.trim() === "")
           throw new Error("Оролтын утга хоосон байна.");
-        variables[b.name] = Number.isFinite(Number(value))
-          ? Number(value)
-          : value;
-        yield { id: b.id, variables: { ...variables } };
-      } else if (b.kind === "assign" && b.name.includes("[")) {
-        const target = parseTarget(b.name);
-        const list = Object.hasOwn(variables, target.name)
-          ? variables[target.name]
-          : undefined;
-        if (!Array.isArray(list))
-          throw new Error(`“${target.name}” массив биш байна.`);
-        const i = position(list, evaluateNode(target.index!, variables), true);
-        const next = [...list];
-        next[i] = evaluate(b.expression, variables);
-        variables[target.name] = next;
+        store(b.name, Number.isFinite(Number(value)) ? Number(value) : value);
         yield { id: b.id, variables: { ...variables } };
       } else if (b.kind === "declare" || b.kind === "assign") {
-        if (!/^[A-Za-z_]\w*$/.test(b.name))
-          throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
-        variables[b.name] = evaluate(b.expression, variables);
+        store(b.name, evaluate(b.expression, variables));
         yield { id: b.id, variables: { ...variables } };
       } else if (b.kind === "output") {
         yield {

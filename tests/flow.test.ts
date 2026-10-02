@@ -138,3 +138,20 @@ test("arrays: literals, indexing, len, element assignment and output", () => {
   assert.deepEqual(frames[0].variables.a, [5, 6]); // earlier frames are not mutated
   assert.throws(() => [...execute([set, block("assign", "a[5]", "1")])]);
 });
+test("input block can fill an array element", () => {
+  const loop = block("for", "i", "0; 2");
+  loop.children = [block("input", "a[i]")];
+  const run = execute([
+    block("declare", "a", "[]"),
+    loop,
+    block("output", "", "a"),
+  ]);
+  const inputs = ["4", "x", "6"];
+  let frame = run.next();
+  let last = "";
+  while (!frame.done) {
+    if (frame.value.output !== undefined) last = frame.value.output;
+    frame = run.next(frame.value.input ? inputs.shift() : undefined);
+  }
+  assert.equal(last, '[4, "x", 6]');
+});

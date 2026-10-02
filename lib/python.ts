@@ -172,8 +172,12 @@ export function pythonCode(blocks: Block[]): string {
     if (!list.length) return `${pad}pass`;
     return list
       .map((b) => {
-        if (b.kind === "input")
-          return `${pad}${name(b.name)} = ${helper("read")}()`;
+        if (b.kind === "input") {
+          if (!b.name.includes("["))
+            return `${pad}${name(b.name)} = ${helper("read")}()`;
+          const target = parseTarget(b.name);
+          return `${pad}${name(target.name)} = ${helper("set")}(${name(target.name)}, ${render(target.index!)}, ${helper("read")}())`;
+        }
         if (b.kind === "for") {
           const [start, end, step] = splitForBounds(b.expression);
           const bound = (source: string) =>

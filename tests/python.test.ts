@@ -96,3 +96,14 @@ test("arrays generate Python matching the flow executor", () => {
   ];
   assert.equal(run(blocks), '[1, 2, 3, 4]\n10\nlen=4[true, "q"]\ntrue');
 });
+test("input into an array element generates matching Python", () => {
+  const loop = block("for", "i", "0; 2");
+  loop.children = [block("input", "a[i]")];
+  assert.equal(
+    run(
+      [block("declare", "a", "[]"), loop, block("output", "", "a")],
+      "4\nx\n6\n",
+    ),
+    '[4, "x", 6]',
+  );
+});
