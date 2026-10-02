@@ -1,5 +1,6 @@
 "use client";
 import { Braces, Square } from "lucide-react";
+import { formatValue } from "@/lib/flow";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
 import { ProblemPanel } from "./problem-panel";
@@ -35,7 +36,9 @@ export function VariablesPanel() {
               </span>
               <span>
                 {Object.hasOwn(variables, name)
-                  ? typeof variables[name] === "number"
+                  ? Array.isArray(variables[name])
+                    ? "Array"
+                    : typeof variables[name] === "number"
                     ? "Number"
                     : typeof variables[name] === "boolean"
                       ? "Boolean"
@@ -45,7 +48,7 @@ export function VariablesPanel() {
               <code
                 className={Object.hasOwn(variables, name) ? "has-value" : ""}
               >
-                {Object.hasOwn(variables, name) ? String(variables[name]) : "—"}
+                {Object.hasOwn(variables, name) ? formatValue(variables[name]) : "—"}
               </code>
             </div>
           ))}

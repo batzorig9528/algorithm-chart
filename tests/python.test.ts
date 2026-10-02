@@ -80,3 +80,19 @@ test("for block supports custom and negative steps", () => {
   down.children = [block("output", "", "i")];
   assert.equal(run([block("input", "n"), down], "5\n"), "5\n3\n1");
 });
+test("arrays generate Python matching the flow executor", () => {
+  const loop = block("for", "i", "0; len(a) - 1");
+  loop.children = [block("assign", "sum", "sum + a[i]")];
+  const blocks = [
+    block("declare", "a", '[1, 2, "x"]'),
+    block("assign", "a[len(a)]", "4"),
+    block("assign", "a[2]", "3"),
+    block("declare", "sum", "0"),
+    loop,
+    block("output", "", "a"),
+    block("output", "", "sum"),
+    block("output", "", '"len=" + len(a) + [true, "q"]'),
+    block("output", "", "[1, 2] == [1, 2]"),
+  ];
+  assert.equal(run(blocks), '[1, 2, 3, 4]\n10\nlen=4[true, "q"]\ntrue');
+});

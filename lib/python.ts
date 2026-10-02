@@ -1,5 +1,10 @@
 import { type Block, flatten, splitForBounds } from "./flow";
-import { type Expression, parseExpression } from "./expression";
+import {
+  type Expression,
+  parseExpression,
+  parseTarget,
+  targetName,
+} from "./expression";
 
 // Helpers preserve Flow's automatic number/text inputs and mixed text addition.
 const helpers: Record<string, string> = {
@@ -11,11 +16,15 @@ const helpers: Record<string, string> = {
         if text.lower().startswith(("0x", "0b", "0o")):
             return int(text, 0)
     return float(value)`,
-  text: `def _flow_text(value):
+  text: `def _flow_text(value, nested=False):
     if isinstance(value, bool):
         return "true" if value else "false"
+    if isinstance(value, list):
+        return "[" + ", ".join(_flow_text(item, True) for item in value) + "]"
     if isinstance(value, float) and value.is_integer():
         return str(int(value))
+    if nested and isinstance(value, str):
+        return __import__("json").dumps(value, ensure_ascii=False)
     return str(value)`,
   read: `def _flow_read():
     value = input()
@@ -31,20 +40,43 @@ const helpers: Record<string, string> = {
   add: `def _flow_add(left, right):
     if isinstance(left, str) or isinstance(right, str):
         return _flow_text(left) + _flow_text(right)
+    if isinstance(left, list) or isinstance(right, list):
+        raise TypeError("Массивыг + үйлдэлд ашиглах боломжгүй.")
     return left + right`,
   equal: `def _flow_equal(left, right):
     def kind(value):
-        return "bool" if isinstance(value, bool) else "text" if isinstance(value, str) else "number"
+        return "bool" if isinstance(value, bool) else "text" if isinstance(value, str) else "list" if isinstance(value, list) else "number"
     return kind(left) == kind(right) and left == right`,
   compare: `def _flow_compare(left, right, operator):
     if not (isinstance(left, str) and isinstance(right, str)):
         left, right = _flow_number(left), _flow_number(right)
     return {"<": left < right, ">": left > right, "<=": left <= right, ">=": left >= right}[operator]`,
+  index: `def _flow_index(items, index, append=False):
+    if not isinstance(index, (int, float)) or isinstance(index, bool) or index != int(index):
+        raise ValueError("Индекс бүхэл тоо байх ёстой.")
+    index = int(index)
+    if index < 0 or index > len(items) - (0 if append else 1):
+        raise IndexError(f"Индекс {index} хүрээнээс гарлаа (урт {len(items)}).")
+    return index`,
+  get: `def _flow_get(items, index):
+    if not isinstance(items, (list, str)):
+        raise TypeError("Индекс зөвхөн массив эсвэл текстэнд ашиглагдана.")
+    return items[_flow_index(items, index)]`,
+  set: `def _flow_set(items, index, value):
+    if not isinstance(items, list):
+        raise TypeError("Массив биш байна.")
+    index = _flow_index(items, index, True)
+    items = list(items)
+    if index == len(items):
+        items.append(value)
+    else:
+        items[index] = value
+    return items`,
   logic: `def _flow_logic(left, right, operator):
     return (bool(left) and bool(right)) if operator == "and" else (bool(left) or bool(right))`,
 };
 const reserved = new Set(
-  "False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield print input float int str bool isinstance ValueError RuntimeError __import__ main".split(
+  "False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield print input float int str bool list len isinstance ValueError RuntimeError __import__ main".split(
     " ",
   ),
 );
@@ -54,7 +86,7 @@ export function pythonCode(blocks: Block[]): string {
   const names = new Map<string, string>();
   const occupied = new Set(
     flatten(blocks)
-      .map((b) => b.name)
+      .map((b) => targetName(b.name))
       .filter(Boolean),
   );
   function name(value: string) {
@@ -76,6 +108,8 @@ export function pythonCode(blocks: Block[]): string {
     used.add(key);
     if (key === "read" || key === "compare") used.add("number");
     if (key === "add") used.add("text");
+    if (key === "get" || key === "set") used.add("index");
+    if (key === "index") used.add("number");
     return `_flow_${key}`;
   }
   function numeric(node: Expression): boolean {
@@ -97,6 +131,14 @@ export function pythonCode(blocks: Block[]): string {
           : "False"
         : JSON.stringify(node.value);
     if (node.type === "variable") return name(node.name);
+    if (node.type === "array") return `[${node.items.map(render).join(", ")}]`;
+    if (node.type === "index")
+      return `${helper("get")}(${render(node.target)}, ${render(node.index)})`;
+    if (node.type === "call") {
+      if (node.args.length !== 1)
+        throw new Error("len функц яг нэг утга авна.");
+      return `len(${render(node.args[0])})`;
+    }
     if (node.type === "unary")
       return node.operator === "!"
         ? `(not ${render(node.operand)})`
@@ -148,6 +190,10 @@ export function pythonCode(blocks: Block[]): string {
           return `${pad}while ${expression}:\n${pad}    _flow_steps += 1\n${pad}    if _flow_steps > 10000:\n${pad}        raise RuntimeError("Давталтын хязгаарт хүрлээ.")\n${emit(b.children, depth + 1)}`;
         if (b.kind === "output")
           return `${pad}print(${helper("text")}(${expression}))`;
+        if (b.kind === "assign" && b.name.includes("[")) {
+          const target = parseTarget(b.name);
+          return `${pad}${name(target.name)} = ${helper("set")}(${name(target.name)}, ${render(target.index!)}, ${expression})`;
+        }
         return `${pad}${name(b.name)} = ${expression}`;
       })
       .join("\n");

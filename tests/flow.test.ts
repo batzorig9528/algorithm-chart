@@ -113,3 +113,28 @@ test("for block honours custom and negative steps", () => {
   assert.deepEqual(outputs("5; 1; -2"), ["5", "3", "1"]);
   assert.throws(() => outputs("1; 5; 0"));
 });
+test("arrays: literals, indexing, len, element assignment and output", () => {
+  assert.deepEqual(evaluate("[1, 2 + 3, []]", {}), [1, 5, []]);
+  assert.equal(evaluate("a[1] + a[2]", { a: [1, 2, 3] }), 5);
+  assert.equal(evaluate('len(a) + len("abc")', { a: [1, 2] }), 5);
+  assert.equal(evaluate("[1, 2] == [1, 2]", {}), true);
+  assert.equal(evaluate('"x" + [1, "a"]', {}), 'x[1, "a"]');
+  for (const expr of [
+    "a[2]",
+    "a[-1]",
+    "a[0.5]",
+    "a + 1",
+    "a * 2",
+    "len(1)",
+    "foo(1)",
+  ])
+    assert.throws(() => evaluate(expr, { a: [1, 2] }), expr);
+  const set = block("declare", "a", "[5, 6]");
+  const assign = block("assign", "a[len(a)]", "7");
+  const replace = block("assign", "a[0]", "a[0] * 2");
+  const out = block("output", "", "a");
+  const frames = [...execute([set, assign, replace, out])];
+  assert.equal(frames.at(-1)?.output, "[10, 6, 7]");
+  assert.deepEqual(frames[0].variables.a, [5, 6]); // earlier frames are not mutated
+  assert.throws(() => [...execute([set, block("assign", "a[5]", "1")])]);
+});

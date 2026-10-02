@@ -13,7 +13,7 @@ import {
 import type { Problem, SubmitResult } from "@/types/problem";
 import { defaultValues } from "@/lib/editor-defaults";
 import { pythonCode } from "@/lib/python";
-import { parseExpression } from "@/lib/expression";
+import { parseExpression, parseTarget, targetName } from "@/lib/expression";
 import { downloadText } from "@/lib/download";
 import {
   insertProjectBlock,
@@ -74,7 +74,7 @@ export function useEditorController() {
     ...new Set([
       ...allBlocks
         .filter((b) => ["declare", "assign", "input", "for"].includes(b.kind))
-        .map((b) => b.name),
+        .map((b) => targetName(b.name)),
       ...Object.keys(variables),
     ]),
   ].filter(Boolean);
@@ -135,11 +135,13 @@ export function useEditorController() {
     try {
       if (
         ["declare", "assign", "input", "for"].includes(b.kind) &&
-        (!/^[A-Za-z_]\w*$/.test(b.name) || ["true", "false"].includes(b.name))
+        (!/^[A-Za-z_]\w*$/.test(b.kind === "assign" ? targetName(b.name) : b.name) ||
+          ["true", "false"].includes(targetName(b.name)))
       )
         throw new Error(
           "Нэр латин үсэг эсвэл _-ээр эхэлнэ. true, false нэр ашиглахгүй.",
         );
+      if (b.kind === "assign") parseTarget(b.name);
       if (b.kind === "for") {
         const [start, end, step] = splitForBounds(b.expression);
         if (!start || !end)

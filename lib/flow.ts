@@ -1,4 +1,4 @@
-import { parseExpression, type Expression } from "./expression";
+import { parseExpression, parseTarget, type Expression } from "./expression";
 export type Kind =
   "declare" | "input" | "output" | "assign" | "if" | "while" | "for";
 export type Block = {
@@ -9,7 +9,7 @@ export type Block = {
   children: Block[];
   otherwise: Block[];
 };
-export type Value = number | string | boolean;
+export type Value = number | string | boolean | Value[];
 export type Variables = Record<string, Value>;
 export type Project = {
   title: string;
@@ -79,6 +79,39 @@ export function splitForBounds(expression: string): [string, string, string] {
     .map((part) => part.trim());
   return [start, end, step];
 }
+// Text form used by output blocks and string concatenation: [1, "a", true].
+export function formatValue(value: Value, nested = false): string {
+  if (Array.isArray(value))
+    return `[${value.map((item) => formatValue(item, true)).join(", ")}]`;
+  return nested && typeof value === "string"
+    ? JSON.stringify(value)
+    : String(value);
+}
+function sameValue(a: Value, b: Value): boolean {
+  if (Array.isArray(a) || Array.isArray(b))
+    return (
+      Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((item, i) => sameValue(item, b[i]))
+    );
+  return a === b;
+}
+function position(list: Value, index: Value, append = false): number {
+  const n = Number(index);
+  if (
+    typeof index === "boolean" ||
+    Array.isArray(index) ||
+    !Number.isInteger(n)
+  )
+    throw new Error("Индекс бүхэл тоо байх ёстой.");
+  const length =
+    typeof list === "string" ? list.length : (list as Value[]).length;
+  if (n < 0 || n > length - (append ? 0 : 1))
+    throw new Error(`Индекс ${n} хүрээнээс гарлаа (урт ${length}).`);
+  return n;
+}
+
 let serial = 0;
 export function block(kind: Kind, name = "", expression = ""): Block {
   return {
@@ -100,11 +133,30 @@ export function flatten(blocks: Block[]): Block[] {
 
 // Small expression parser: user expressions never execute as JavaScript.
 export function evaluate(source: string, variables: Variables): Value {
+  return evaluateNode(parseExpression(source), variables);
+}
+function evaluateNode(root: Expression, variables: Variables): Value {
   function visit(node: Expression): Value {
     if (node.type === "literal") return node.value;
     if (node.type === "variable") {
       if (Object.hasOwn(variables, node.name)) return variables[node.name];
       throw new Error(`“${node.name}” хувьсагч зарлагдаагүй байна.`);
+    }
+    if (node.type === "array") return node.items.map(visit);
+    if (node.type === "index") {
+      const list = visit(node.target);
+      if (!Array.isArray(list) && typeof list !== "string")
+        throw new Error("Индекс зөвхөн массив эсвэл текстэнд ашиглагдана.");
+      const i = position(list, visit(node.index));
+      return list[i];
+    }
+    if (node.type === "call") {
+      if (node.args.length !== 1)
+        throw new Error("len функц яг нэг утга авна.");
+      const value = visit(node.args[0]);
+      if (!Array.isArray(value) && typeof value !== "string")
+        throw new Error("len функц массив эсвэл текст авна.");
+      return value.length;
     }
     if (node.type === "unary") {
       const value = visit(node.operand);
@@ -114,12 +166,20 @@ export function evaluate(source: string, variables: Variables): Value {
     let left = visit(node.left);
     const right = visit(node.right);
     const op = node.operator;
+    if (
+      ["-", "*", "/", "%", "<", ">", "<=", ">="].includes(op) &&
+      (Array.isArray(left) || Array.isArray(right))
+    )
+      throw new Error(
+        "Массивыг тооцоолол эсвэл харьцуулалтад ашиглах боломжгүй.",
+      );
     switch (op) {
       case "+":
-        left =
-          typeof left === "string" || typeof right === "string"
-            ? String(left) + String(right)
-            : Number(left) + Number(right);
+        if (typeof left === "string" || typeof right === "string")
+          left = formatValue(left) + formatValue(right);
+        else if (Array.isArray(left) || Array.isArray(right))
+          throw new Error("Массивыг + үйлдэлд ашиглах боломжгүй.");
+        else left = Number(left) + Number(right);
         break;
       case "-":
         left = Number(left) - Number(right);
@@ -136,10 +196,10 @@ export function evaluate(source: string, variables: Variables): Value {
             : Number(left) % Number(right);
         break;
       case "==":
-        left = left === right;
+        left = sameValue(left, right);
         break;
       case "!=":
-        left = left !== right;
+        left = !sameValue(left, right);
         break;
       case "<":
         left = left < right;
@@ -162,8 +222,12 @@ export function evaluate(source: string, variables: Variables): Value {
     }
     return left;
   }
-  const value = visit(parseExpression(source));
-  if (typeof value === "number" && !Number.isFinite(value))
+  const value = visit(root);
+  if (
+    !Array.isArray(value) &&
+    typeof value === "number" &&
+    !Number.isFinite(value)
+  )
     throw new Error("Тооцооллын үр дүн хязгаараас хэтэрлээ.");
   return value;
 }
@@ -179,7 +243,7 @@ export function* execute(
           "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
         );
       if (
-        ["declare", "assign", "input", "for"].includes(b.kind) &&
+        ["declare", "input", "for"].includes(b.kind) &&
         !/^[A-Za-z_]\w*$/.test(b.name)
       )
         throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
@@ -195,14 +259,28 @@ export function* execute(
           ? Number(value)
           : value;
         yield { id: b.id, variables: { ...variables } };
+      } else if (b.kind === "assign" && b.name.includes("[")) {
+        const target = parseTarget(b.name);
+        const list = Object.hasOwn(variables, target.name)
+          ? variables[target.name]
+          : undefined;
+        if (!Array.isArray(list))
+          throw new Error(`“${target.name}” массив биш байна.`);
+        const i = position(list, evaluateNode(target.index!, variables), true);
+        const next = [...list];
+        next[i] = evaluate(b.expression, variables);
+        variables[target.name] = next;
+        yield { id: b.id, variables: { ...variables } };
       } else if (b.kind === "declare" || b.kind === "assign") {
+        if (!/^[A-Za-z_]\w*$/.test(b.name))
+          throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
         variables[b.name] = evaluate(b.expression, variables);
         yield { id: b.id, variables: { ...variables } };
       } else if (b.kind === "output") {
         yield {
           id: b.id,
           variables: { ...variables },
-          output: String(evaluate(b.expression, variables)),
+          output: formatValue(evaluate(b.expression, variables)),
         };
       } else if (b.kind === "if") {
         const condition = Boolean(evaluate(b.expression, variables));
