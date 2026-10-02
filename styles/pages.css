@@ -98,3 +98,48 @@
 .example-level {
   font-size: 11px;
 }
+.test-editor {
+  margin: 22px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.test-editor legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.test-editor > p {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.test-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+.problem-form .test-row label {
+  margin-top: 0;
+}
+.test-row textarea {
+  font-family: var(--mono);
+}
+.problem-form .test-sample {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 10px;
+}
+.problem-form .test-sample input {
+  width: auto;
+  margin: 0;
+}
+@media (max-width: 800px) {
+  .test-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -11,7 +11,13 @@ export type Block = {
 };
 export type Value = number | string | boolean;
 export type Variables = Record<string, Value>;
-export type Project = { title: string; description?: string; blocks: Block[] };
+export type Project = {
+  title: string;
+  description?: string;
+  // Set when the project was opened from the problem library; enables "Шалгах".
+  problemId?: number;
+  blocks: Block[];
+};
 export type Frame = {
   id: string;
   variables: Variables;
@@ -271,6 +277,7 @@ export function validateProject(value: unknown): value is Project {
     p.title.length <= 100 &&
     (p.description === undefined ||
       (typeof p.description === "string" && p.description.length <= 5000)) &&
+    (p.problemId === undefined || Number.isInteger(p.problemId)) &&
     validList(p.blocks, 0)
   );
 }

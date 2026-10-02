@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
   name         String?
-  passwordHash String?   @map("password_hash")
-  authSource   String    @default("local") @map("auth_source")
-  teeUserId    String?   @unique @map("tee_user_id")
+  passwordHash String?        @map("password_hash")
+  authSource   String         @default("local") @map("auth_source")
+  teeUserId    String?        @unique @map("tee_user_id")
   // TEE.education role (TEACHER, STUDENT, ...) or one set by the seed script.
   role         String?
-  createdAt    DateTime  @default(now()) @map("created_at")
+  createdAt    DateTime       @default(now()) @map("created_at")
   sessions     Session[]
   problems     Problem[]
+  solves       ProblemSolve[]
 
   @@map("users")
 }
@@ -35,16 +36,47 @@ model Session {
 }
 
 model Problem {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String   @default("")
-  level       String   @default("")
-  tag         String   @default("")
+  id           Int            @id @default(autoincrement())
+  title        String
+  // Full statement: description + input/output format; examples are the sample tests.
+  description  String         @default("")
+  inputFormat  String         @default("") @map("input_format")
+  outputFormat String         @default("") @map("output_format")
+  level        String         @default("")
+  tag          String         @default("")
   // Starter blocks (lib/flow Block[]); empty for teacher-written problems.
-  blocks      Json     @default("[]")
-  authorId    Int?     @map("author_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  blocks       Json           @default("[]")
+  authorId     Int?           @map("author_id")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  author       User?          @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  tests        TestCase[]
+  solves       ProblemSolve[]
 
   @@map("problems")
+}
+
+// One judged run: `input` lines feed the input blocks in order, `expected` is the output lines.
+model TestCase {
+  id        Int     @id @default(autoincrement())
+  problemId Int     @map("problem_id")
+  input     String
+  expected  String
+  // Samples are shown to students; the rest are hidden.
+  isSample  Boolean @default(false) @map("is_sample")
+  position  Int     @default(0)
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+  @@map("test_cases")
+}
+
+model ProblemSolve {
+  userId    Int      @map("user_id")
+  problemId Int      @map("problem_id")
+  solvedAt  DateTime @default(now()) @map("solved_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@id([userId, problemId])
+  @@map("problem_solves")
 }

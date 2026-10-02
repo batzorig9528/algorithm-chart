@@ -9,7 +9,10 @@ import {
 } from "@/lib/server/problems";
 
 export async function GET() {
-  return NextResponse.json({ problems: await listProblems(db) });
+  const user = await currentUser();
+  return NextResponse.json({
+    problems: await listProblems(db, user?.id ?? null),
+  });
 }
 
 export async function POST(request: Request) {

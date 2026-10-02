@@ -2,6 +2,7 @@
 import { Braces, Square } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
+import { ProblemPanel } from "./problem-panel";
 
 export function VariablesPanel() {
   const { variableNames, variables, status, speed, setSpeed, busy, reset } =
@@ -16,6 +17,7 @@ export function VariablesPanel() {
         </span>
       </div>
       <div className="inspector-content">
+        <ProblemPanel />
         <div className="inspector-heading">
           Хувьсагчдын утга<span>{variableNames.length}</span>
         </div>

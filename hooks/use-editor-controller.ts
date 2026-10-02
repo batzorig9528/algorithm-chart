@@ -10,7 +10,7 @@ import {
   type Kind,
   type Project,
 } from "@/lib/flow";
-import type { Problem } from "@/types/problem";
+import type { Problem, SubmitResult } from "@/types/problem";
 import { defaultValues } from "@/lib/editor-defaults";
 import { pythonCode } from "@/lib/python";
 import { parseExpression } from "@/lib/expression";
@@ -20,7 +20,7 @@ import {
   updateProjectBlock,
   removeProjectBlock,
 } from "@/lib/project-tree";
-import type { Slot, EditorModal, BlockDraft } from "@/types/editor";
+import type { Slot, EditorModal, BlockDraft, Log } from "@/types/editor";
 import { useProject } from "./use-project";
 import { useExecution } from "./use-execution";
 
@@ -54,6 +54,8 @@ export function useEditorController() {
   const [modal, setModal] = useState<EditorModal>(null);
   const [sidebar, setSidebar] = useState(true);
   const [toast, setToast] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkCount, setCheckCount] = useState(0);
   const generated = useMemo(() => {
     try {
       return { code: pythonCode(project.blocks), error: "" };
@@ -217,6 +219,7 @@ export function useEditorController() {
     commit({
       title: problem.title,
       description: problem.description,
+      problemId: problem.id,
       blocks: problem.blocks,
     });
     setSelected(null);
@@ -224,6 +227,60 @@ export function useEditorController() {
     setZoom(100);
     setTab("flow");
     router.push("/editor");
+  }
+  // Sends the blocks to the server judge and prints each test's outcome in the console.
+  async function check() {
+    const problemId = project.problemId;
+    if (!problemId || busy || checking) return;
+    setChecking(true);
+    execution.setLogs([{ type: "system", text: "Тестүүдээр шалгаж байна..." }]);
+    try {
+      const res = await fetch(`/api/problems/${problemId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocks: project.blocks }),
+      });
+      const data: SubmitResult & { error?: string } = await res.json();
+      if (!res.ok) {
+        execution.setLogs([
+          { type: "error", text: data.error || "Шалгаж чадсангүй." },
+        ]);
+        return;
+      }
+      const lines: Log[] = data.results.map((r) => {
+        const name = r.sample
+          ? `Тест ${r.index + 1}`
+          : `Нууц тест ${r.index + 1}`;
+        if (r.passed) return { type: "success", text: `${name} ✓` };
+        const detail = r.error
+          ? ` — ${r.error}`
+          : r.sample
+            ? ` — оролт: ${r.input?.replace(/\n/g, ", ")} · хүлээгдсэн: ${r.expected?.replace(/\n/g, ", ")} · гарсан: ${r.got?.replace(/\n/g, ", ") || "—"}`
+            : "";
+        return { type: "error", text: `${name} ✗${detail}` };
+      });
+      lines.push(
+        data.allPassed
+          ? {
+              type: "success",
+              text: `Бүх тест давлаа (${data.passed}/${data.total}).${
+                data.saved
+                  ? " Бодлого хадгалагдлаа."
+                  : " Нэвтэрч орвол бодлого хадгалагдана."
+              }`,
+            }
+          : {
+              type: "error",
+              text: `${data.passed}/${data.total} тест давлаа.`,
+            },
+      );
+      execution.setLogs(lines);
+      setCheckCount((c) => c + 1);
+    } catch {
+      execution.setLogs([{ type: "error", text: "Сүлжээний алдаа гарлаа." }]);
+    } finally {
+      setChecking(false);
+    }
   }
   function restoreSavedProject() {
     if (!savedProject || busy || !ready) return;
@@ -294,6 +351,9 @@ export function useEditorController() {
     downloadPython,
     importFile,
     loadProblem,
+    check,
+    checking,
+    checkCount,
     saveProblem,
   };
 }

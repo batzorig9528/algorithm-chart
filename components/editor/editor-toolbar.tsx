@@ -1,5 +1,6 @@
 "use client";
 import {
+  CheckCircle2,
   Code2,
   Pause,
   Play,
@@ -25,6 +26,9 @@ export function EditorToolbar() {
     reset,
     start,
     pause,
+    project,
+    check,
+    checking,
   } = useEditor();
 
   return (
@@ -70,6 +74,16 @@ export function EditorToolbar() {
           <SkipForward size={15} />
           Алхмаар
         </button>
+        {project.problemId && (
+          <button
+            className="button check-button"
+            disabled={busy || checking}
+            onClick={check}
+          >
+            <CheckCircle2 size={15} />
+            {checking ? "Шалгаж байна..." : "Шалгах"}
+          </button>
+        )}
         {status === "running" ? (
           <button className="button run-button" onClick={pause}>
             <Pause size={14} />

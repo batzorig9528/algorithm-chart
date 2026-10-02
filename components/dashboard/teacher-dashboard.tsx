@@ -5,7 +5,16 @@ import { useAuth } from "@/contexts/auth-context";
 import { useProblems } from "@/components/problems/use-problems";
 
 const LEVELS = ["Анхан шат", "Дунд шат", "Ахисан шат"];
-const emptyDraft = { title: "", description: "", level: LEVELS[0], tag: "" };
+const emptyTest = { input: "", expected: "", isSample: false };
+const emptyDraft = {
+  title: "",
+  description: "",
+  inputFormat: "",
+  outputFormat: "",
+  level: LEVELS[0],
+  tag: "",
+  tests: [{ ...emptyTest, isSample: true }],
+};
 
 export function TeacherDashboard() {
   const { user, ready, openModal } = useAuth();
@@ -17,6 +26,13 @@ export function TeacherDashboard() {
   const isTeacher = ["TEACHER", "ADMIN"].includes(
     user?.role?.toUpperCase() ?? "",
   );
+
+  function setTest(index: number, patch: Partial<typeof emptyTest>) {
+    setDraft({
+      ...draft,
+      tests: draft.tests.map((t, i) => (i === index ? { ...t, ...patch } : t)),
+    });
+  }
 
   async function create(e: FormEvent) {
     e.preventDefault();
@@ -100,6 +116,32 @@ export function TeacherDashboard() {
               }
             />
           </label>
+          <label htmlFor="dash-input-format">
+            Оролтын тайлбар
+            <textarea
+              id="dash-input-format"
+              maxLength={5000}
+              rows={2}
+              value={draft.inputFormat}
+              onChange={(e) =>
+                setDraft({ ...draft, inputFormat: e.target.value })
+              }
+              placeholder="Жишээ: Нэг мөрөнд нэг тоо, нийт хоёр тоо."
+            />
+          </label>
+          <label htmlFor="dash-output-format">
+            Гаралтын тайлбар
+            <textarea
+              id="dash-output-format"
+              maxLength={5000}
+              rows={2}
+              value={draft.outputFormat}
+              onChange={(e) =>
+                setDraft({ ...draft, outputFormat: e.target.value })
+              }
+              placeholder="Жишээ: Хоёр тооны нийлбэр."
+            />
+          </label>
           <label htmlFor="dash-level">
             Түвшин
             <select
@@ -122,6 +164,69 @@ export function TeacherDashboard() {
               placeholder="Жишээ: Давталт · Хувьсагч"
             />
           </label>
+          <fieldset className="test-editor">
+            <legend>Тестүүд</legend>
+            <p className="muted">
+              Оролт: мөр бүр нэг оролтын блокт өгөгдөнө. Гаралт: хүлээгдэх
+              мөрүүд. “Жишээ” гэж тэмдэглэсэн тест сурагчид харагдана, бусад нь
+              нууц.
+            </p>
+            {draft.tests.map((t, i) => (
+              <div className="test-row" key={i}>
+                <label>
+                  Оролт
+                  <textarea
+                    rows={2}
+                    value={t.input}
+                    onChange={(e) => setTest(i, { input: e.target.value })}
+                  />
+                </label>
+                <label>
+                  Хүлээгдэх гаралт
+                  <textarea
+                    rows={2}
+                    value={t.expected}
+                    onChange={(e) => setTest(i, { expected: e.target.value })}
+                  />
+                </label>
+                <label className="test-sample">
+                  <input
+                    type="checkbox"
+                    checked={t.isSample}
+                    onChange={(e) => setTest(i, { isSample: e.target.checked })}
+                  />
+                  Жишээ
+                </label>
+                <button
+                  type="button"
+                  className="button subtle"
+                  aria-label={`Тест ${i + 1} устгах`}
+                  disabled={draft.tests.length === 1}
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      tests: draft.tests.filter((_, j) => j !== i),
+                    })
+                  }
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="button"
+              onClick={() =>
+                setDraft({
+                  ...draft,
+                  tests: [...draft.tests, { ...emptyTest }],
+                })
+              }
+            >
+              <Plus size={14} />
+              Тест нэмэх
+            </button>
+          </fieldset>
           {(formError || error) && (
             <p className="form-error" role="alert">
               {formError || error}
@@ -146,7 +251,9 @@ export function TeacherDashboard() {
               <div>
                 <strong>{p.title}</strong>
                 <small>
-                  {[p.level, p.tag, p.authorName].filter(Boolean).join(" · ")}
+                  {[p.level, p.tag, `${p.testCount} тест`, p.authorName]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </small>
               </div>
               <button

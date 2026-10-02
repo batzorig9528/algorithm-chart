@@ -37,7 +37,9 @@ export function ProblemLibrary() {
               <span className={`example-number number-${i % 3}`}>
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="example-level">{ex.level}</span>
+              <span className="example-level">
+                {ex.solved ? "✓ Бодсон" : ex.level}
+              </span>
               <h3>{ex.title}</h3>
               <p>{ex.description}</p>
             </button>

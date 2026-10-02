@@ -238,3 +238,26 @@ test("startup stays blank with a previously saved problem and does not overwrite
     ),
   ).toEqual(saved);
 });
+
+test("a library problem is judged against its tests", async ({ page }) => {
+  await page.goto("/problems");
+  await page.getByRole("button", { name: /Хоёр тооны нийлбэр/ }).click();
+  await expect(page.locator(".problem-panel")).toContainText("Жишээ 1");
+  await page.getByRole("button", { name: "Шалгах", exact: true }).click();
+  await expect(page.locator(".log-line.success").last()).toContainText(
+    "Бүх тест давлаа (4/4)",
+  );
+  // Break the solution: now at least one test must fail.
+  await page
+    .getByRole("button", { name: "Утга олгох: sum = a + b", exact: true })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Илэрхийлэл", exact: true })
+    .fill("a - b");
+  await page.getByRole("button", { name: "Хадгалах", exact: true }).click();
+  await page.getByRole("button", { name: "Шалгах", exact: true }).click();
+  await expect(page.locator(".log-line.error").last()).toContainText(
+    "тест давлаа",
+  );
+  await expect(page.locator(".log-line.error").first()).toContainText("✗");
+});
