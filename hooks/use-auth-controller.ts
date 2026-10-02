@@ -26,7 +26,10 @@ export function useAuthController() {
     setModal(next);
   }
 
-  async function submit(path: "register" | "login" | "tee-login", body: object) {
+  async function submit(
+    path: "register" | "login" | "tee-login",
+    body: object,
+  ) {
     setBusy(true);
     setFormError("");
     try {
@@ -52,7 +55,10 @@ export function useAuthController() {
   function register(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (busy) return;
-    void submit("register", { email: draft.identifier, password: draft.password });
+    void submit("register", {
+      email: draft.identifier,
+      password: draft.password,
+    });
   }
   function login(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

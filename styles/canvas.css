@@ -56,22 +56,20 @@
   font-weight: 650;
   flex-shrink: 0;
 }
+.terminator.start,
+.terminator.end {
+  border: 1px solid #9070a0;
+  background: #f0e0ff;
+  color: #301040;
+}
 .terminator.start {
-  border: 1px solid var(--k14);
-  background: var(--k15);
-  color: var(--k16);
   box-shadow: 0 2px 4px var(--k17);
 }
 .terminator.start > span {
   height: 7px;
   width: 7px;
   border-radius: 50%;
-  background: var(--k18);
-}
-.terminator.end {
-  background: var(--k19);
-  border: 1px solid var(--k20);
-  color: var(--k21);
+  background: currentColor;
 }
 .flow-list,
 .flow-item {
@@ -155,7 +153,7 @@
   display: grid;
   place-items: center;
   border-radius: 5px;
-  background: var(--k34);
+  background: #ffffff65;
 }
 .block-content {
   display: flex;
@@ -177,7 +175,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 145px;
-  color: var(--k35);
+  color: var(--block-color);
 }
 .block-dot {
   width: 4px;

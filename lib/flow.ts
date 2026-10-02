@@ -32,7 +32,7 @@ export const definitions: Record<
     label: "Хувьсагч",
     english: "Declare",
     description: "Хувьсагч зарлах",
-    color: "violet",
+    color: "yellow",
   },
   input: {
     label: "Оролт",
@@ -50,25 +50,25 @@ export const definitions: Record<
     label: "Утга олгох",
     english: "Assign",
     description: "Тооцоолол хийх",
-    color: "indigo",
+    color: "yellow",
   },
   if: {
     label: "Нөхцөл",
     english: "If / Else",
     description: "Нөхцөл шалгах",
-    color: "amber",
+    color: "red",
   },
   while: {
     label: "Давталт",
     english: "While",
     description: "Нөхцөл биелэх хооронд давтах",
-    color: "pink",
+    color: "orange",
   },
   for: {
     label: "Тоолуур давталт",
     english: "For",
     description: "Эхлэлээс төгсгөл хүртэл 1-ээр нэмэгдэн давтах",
-    color: "teal",
+    color: "orange",
   },
 };
 // A "for" block keeps its range in `expression` as "start; end; step" (end inclusive,

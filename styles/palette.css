@@ -123,45 +123,41 @@
   margin-left: auto;
   color: var(--k207);
 }
-.violet {
-  --block-color: var(--k208);
-  --block-bg: var(--k209);
-  --block-border: var(--k210);
+/* Flowgorithm's default pastel shape colors, shared by the palette and canvas.
+   Keep these colors in both themes so each block retains its familiar identity.
+   Source: https://www.flowgorithm.org/documentation/index.html */
+.yellow {
+  --block-color: #404018;
+  --block-bg: #ffffd8;
+  --block-border: #a0a078;
   background: var(--block-bg);
   color: var(--block-color);
 }
 .blue {
-  --block-color: var(--k211);
-  --block-bg: var(--k212);
-  --block-border: var(--k213);
+  --block-color: #102840;
+  --block-bg: #d0e8ff;
+  --block-border: #7088a0;
   background: var(--block-bg);
   color: var(--block-color);
 }
 .green {
-  --block-color: var(--k214);
-  --block-bg: var(--k215);
-  --block-border: var(--k216);
+  --block-color: #184018;
+  --block-bg: #d8ffd8;
+  --block-border: #78a078;
   background: var(--block-bg);
   color: var(--block-color);
 }
-.indigo {
-  --block-color: var(--k217);
-  --block-bg: var(--k218);
-  --block-border: var(--k219);
+.red {
+  --block-color: #401818;
+  --block-bg: #ffd8d8;
+  --block-border: #a07878;
   background: var(--block-bg);
   color: var(--block-color);
 }
-.amber {
-  --block-color: var(--k220);
-  --block-bg: var(--k221);
-  --block-border: var(--k222);
-  background: var(--block-bg);
-  color: var(--block-color);
-}
-.pink {
-  --block-color: var(--k223);
-  --block-bg: var(--k224);
-  --block-border: var(--k225);
+.orange {
+  --block-color: #402000;
+  --block-bg: #ffe0b0;
+  --block-border: #a08050;
   background: var(--block-bg);
   color: var(--block-color);
 }
@@ -253,13 +249,6 @@
   margin-left: auto;
 }
 
-.teal {
-  --block-color: var(--k237);
-  --block-bg: var(--k238);
-  --block-border: var(--k239);
-  background: var(--block-bg);
-  color: var(--block-color);
-}
 .search-box {
   margin: 16px 0 14px;
 }

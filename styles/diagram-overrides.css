@@ -43,9 +43,6 @@
 .kind-if.executing {
   background: var(--k31);
 }
-.kind-if.executing:after {
-  background: var(--k83);
-}
 @media (max-width: 800px) {
   .diagram {
     padding-top: 55px;
