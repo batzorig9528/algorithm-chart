@@ -84,7 +84,7 @@ export async function upsertTeeUser(
         data: {
           name: profile.name,
           teeUserId: profile.id,
-          role: profile.role,
+          ...(profile.role ? { role: profile.role } : {}),
           authSource:
             existing.authSource === "local" ? "both" : existing.authSource,
         },
