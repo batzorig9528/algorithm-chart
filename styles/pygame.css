@@ -1,0 +1,254 @@
+.pygame-workspace {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.pygame-heading {
+  margin-bottom: 26px;
+}
+.pygame-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--purple);
+  font: 11px var(--mono);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+.pygame-heading h1 {
+  font-size: clamp(25px, 4vw, 34px);
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+.pygame-heading p,
+.pygame-help {
+  color: var(--muted);
+  line-height: 1.9;
+}
+.pygame-editor-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--k6);
+}
+.pygame-toolbar,
+.pygame-run-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pygame-toolbar {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.pygame-filename {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font: 13px var(--mono);
+}
+.pygame-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pygame-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--k6);
+  font-size: 12px;
+  font-weight: 600;
+}
+.pygame-button:hover:not(:disabled) {
+  background: var(--purple-light);
+}
+.pygame-button.pygame-primary {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple);
+}
+.pygame-code-editor {
+  display: flex;
+  height: clamp(340px, 55vh, 620px);
+  min-width: 0;
+}
+.pygame-line-numbers,
+#pygame-code {
+  font: 13px/23px var(--mono);
+  padding-top: 18px;
+  padding-bottom: 18px;
+  tab-size: 4;
+}
+.pygame-line-numbers {
+  flex: 0 0 54px;
+  padding-right: 12px;
+  color: var(--muted);
+  background: var(--k9);
+  text-align: right;
+  overflow: hidden;
+  user-select: none;
+}
+#pygame-code {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  border: 0;
+  border-radius: 0;
+  resize: none;
+  color: var(--ink);
+  background: var(--k6);
+  overflow: auto;
+  white-space: pre;
+}
+#pygame-code:focus {
+  outline: 2px solid var(--purple);
+  outline-offset: -2px;
+}
+.pygame-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  padding: 12px 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.pygame-help {
+  margin-top: 20px;
+  font-size: 12px;
+}
+.pygame-help p + p {
+  margin-top: 8px;
+}
+.pygame-help code {
+  color: var(--ink);
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+.pygame-result {
+  margin-top: 18px;
+}
+.pygame-run-toolbar {
+  margin-bottom: 14px;
+}
+.pygame-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.pygame-status-running {
+  color: var(--purple);
+}
+.pygame-status-error {
+  color: #cb4663;
+}
+.pygame-stage {
+  position: relative;
+  height: clamp(170px, 42vh, 430px);
+  background: #161828;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pygame-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.pygame-stage-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  color: #c9c6da;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.pygame-input-help {
+  margin: 10px 0 16px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.pygame-console-heading {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pygame-console-heading h3 {
+  font-size: 12px;
+}
+.pygame-console-heading span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+.pygame-console {
+  max-height: 160px;
+  min-height: 65px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--k9);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0 0;
+  font: 12px/1.7 var(--mono);
+}
+.pygame-spinner {
+  animation: pygame-spin 1s linear infinite;
+}
+@keyframes pygame-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pygame-spinner {
+    animation: none;
+  }
+}
+@media (max-width: 600px) {
+  .pygame-stage {
+    height: auto;
+    min-height: 170px;
+    aspect-ratio: 8 / 5;
+  }
+  .pygame-toolbar {
+    padding: 12px;
+  }
+  .pygame-toolbar .pygame-actions {
+    width: 100%;
+  }
+  .pygame-button {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+  .pygame-toolbar .pygame-primary {
+    flex-grow: 1;
+  }
+  .pygame-line-numbers {
+    flex-basis: 38px;
+    padding-right: 8px;
+  }
+  #pygame-code {
+    padding-left: 10px;
+  }
+  .pygame-run-toolbar {
+    gap: 10px;
+  }
+}

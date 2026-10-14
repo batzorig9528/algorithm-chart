@@ -1,11 +1,36 @@
 import { parseExpression, parseTarget, type Expression } from "./expression";
 export type Kind =
-  "declare" | "input" | "output" | "assign" | "if" | "while" | "for";
+  | "declare"
+  | "input"
+  | "output"
+  | "assign"
+  | "if"
+  | "while"
+  | "dowhile"
+  | "for"
+  | "function"
+  | "call"
+  | "return";
+export const variableTypes = {
+  int: "Бүхэл тоо",
+  real: "Бодит тоо",
+  string: "Текст",
+  boolean: "Логик",
+  array: "Массив",
+};
+export type VariableType = keyof typeof variableTypes;
 export type Block = {
   id: string;
   kind: Kind;
+  // declare: comma separated names · function: its name · call: the function called.
   name: string;
+  // declare: optional initial value · function: comma separated parameters ·
+  // call: comma separated arguments.
   expression: string;
+  // declare only: the type of the declared variables.
+  type?: VariableType;
+  // call only: the variable that receives the returned value (optional).
+  result?: string;
   children: Block[];
   otherwise: Block[];
 };
@@ -64,13 +89,66 @@ export const definitions: Record<
     description: "Нөхцөл биелэх хооронд давтах",
     color: "orange",
   },
+  dowhile: {
+    label: "Заавал давталт",
+    english: "Do while",
+    description: "Нэг удаа гүйцэтгээд, нөхцөл биелэх хооронд давтах",
+    color: "orange",
+  },
   for: {
     label: "Тоолуур давталт",
     english: "For",
     description: "Эхлэлээс төгсгөл хүртэл 1-ээр нэмэгдэн давтах",
     color: "orange",
   },
+  function: {
+    label: "Функц",
+    english: "Function",
+    description: "Дахин ашиглах хэсэг тодорхойлох",
+    color: "purple",
+  },
+  call: {
+    label: "Функц дуудах",
+    english: "Call",
+    description: "Тодорхойлсон функцээ дуудах",
+    color: "purple",
+  },
+  return: {
+    label: "Буцаах",
+    english: "Return",
+    description: "Функцээс утга буцааж гарах",
+    color: "purple",
+  },
 };
+// Comma separated names: declare "a, b, c" · function parameters "a, b".
+export function splitNames(source: string): string[] {
+  return source
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+export function defaultValue(type: VariableType): Value {
+  return type === "string"
+    ? ""
+    : type === "boolean"
+      ? false
+      : type === "array"
+        ? []
+        : 0;
+}
+function checkType(type: VariableType, value: Value) {
+  const ok =
+    type === "int"
+      ? typeof value === "number" && Number.isInteger(value)
+      : type === "real"
+        ? typeof value === "number"
+        : type === "string"
+          ? typeof value === "string"
+          : type === "boolean"
+            ? typeof value === "boolean"
+            : Array.isArray(value);
+  if (!ok) throw new Error(`Утга “${variableTypes[type]}” төрөлд тохирохгүй.`);
+}
 // A "for" block keeps its range in `expression` as "start; end; step" (end inclusive,
 // step optional and 1 by default; a negative step counts down).
 export function splitForBounds(expression: string): [string, string, string] {
@@ -231,11 +309,23 @@ function evaluateNode(root: Expression, variables: Variables): Value {
     throw new Error("Тооцооллын үр дүн хязгаараас хэтэрлээ.");
   return value;
 }
+type Return = { value?: Value };
 export function* execute(
   blocks: Block[],
 ): Generator<Frame, void, string | undefined> {
-  const variables: Variables = Object.create(null);
+  let variables: Variables = Object.create(null);
+  const functions = new Map<string, Block>();
+  for (const b of flatten(blocks))
+    if (b.kind === "function" && !functions.has(b.name.trim()))
+      functions.set(b.name.trim(), b);
   let steps = 0;
+  let depth = 0;
+  const limit = () => {
+    if (++steps > 10000)
+      throw new Error(
+        "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
+      );
+  };
   // Writes a variable, or one element of an array when the name is `a[i]`.
   function store(name: string, value: Value) {
     if (!name.includes("[")) {
@@ -254,13 +344,13 @@ export function* execute(
     next[position(list, evaluateNode(target.index!, variables), true)] = value;
     variables[target.name] = next;
   }
-  function* visit(list: Block[]): Generator<Frame, void, string | undefined> {
+  // Runs a list of blocks; a `return` block stops it and hands the value upward.
+  function* visit(
+    list: Block[],
+  ): Generator<Frame, Return | undefined, string | undefined> {
     for (const b of list) {
-      if (++steps > 10000)
-        throw new Error(
-          "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
-        );
-      if (["declare", "for"].includes(b.kind) && !/^[A-Za-z_]\w*$/.test(b.name))
+      limit();
+      if (b.kind === "for" && !/^[A-Za-z_]\w*$/.test(b.name))
         throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
       if (b.kind === "input") {
         const value = yield {
@@ -272,7 +362,21 @@ export function* execute(
           throw new Error("Оролтын утга хоосон байна.");
         store(b.name, Number.isFinite(Number(value)) ? Number(value) : value);
         yield { id: b.id, variables: { ...variables } };
-      } else if (b.kind === "declare" || b.kind === "assign") {
+      } else if (b.kind === "declare") {
+        const names = splitNames(b.name);
+        if (!names.length || names.some((n) => !/^[A-Za-z_]\w*$/.test(n)))
+          throw new Error("Хувьсагчийн нэр латин үсгээр эхэлсэн байх ёстой.");
+        if (!b.expression.trim() && !b.type)
+          throw new Error("Хувьсагчийн эхний утгыг бичнэ үү.");
+        for (const n of names) {
+          const value = b.expression.trim()
+            ? evaluate(b.expression, variables)
+            : defaultValue(b.type!);
+          if (b.type) checkType(b.type, value);
+          variables[n] = value;
+        }
+        yield { id: b.id, variables: { ...variables } };
+      } else if (b.kind === "assign") {
         store(b.name, evaluate(b.expression, variables));
         yield { id: b.id, variables: { ...variables } };
       } else if (b.kind === "output") {
@@ -284,7 +388,8 @@ export function* execute(
       } else if (b.kind === "if") {
         const condition = Boolean(evaluate(b.expression, variables));
         yield { id: b.id, variables: { ...variables } };
-        yield* visit(condition ? b.children : b.otherwise);
+        const returned = yield* visit(condition ? b.children : b.otherwise);
+        if (returned) return returned;
       } else if (b.kind === "for") {
         const [startSource, endSource, stepSource] = splitForBounds(
           b.expression,
@@ -301,27 +406,72 @@ export function* execute(
           step > 0 ? i <= Math.trunc(end) : i >= Math.trunc(end);
           i += step
         ) {
-          if (++steps > 10000)
-            throw new Error(
-              "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
-            );
+          limit();
           variables[b.name] = i;
           yield { id: b.id, variables: { ...variables } };
-          yield* visit(b.children);
+          const returned = yield* visit(b.children);
+          if (returned) return returned;
         }
-      } else {
+      } else if (b.kind === "while") {
         while (true) {
-          if (++steps > 10000)
-            throw new Error(
-              "10,000 алхмын хязгаарт хүрлээ. Давталтын нөхцөлийг шалгана уу.",
-            );
+          limit();
           const condition = Boolean(evaluate(b.expression, variables));
           yield { id: b.id, variables: { ...variables } };
           if (!condition) break;
-          yield* visit(b.children);
+          const returned = yield* visit(b.children);
+          if (returned) return returned;
         }
+      } else if (b.kind === "dowhile") {
+        while (true) {
+          limit();
+          const returned = yield* visit(b.children);
+          if (returned) return returned;
+          const condition = Boolean(evaluate(b.expression, variables));
+          yield { id: b.id, variables: { ...variables } };
+          if (!condition) break;
+        }
+      } else if (b.kind === "return") {
+        const value = b.expression.trim()
+          ? evaluate(b.expression, variables)
+          : undefined;
+        yield { id: b.id, variables: { ...variables } };
+        return { value };
+      } else if (b.kind === "call") {
+        const fn = functions.get(b.name.trim());
+        if (!fn) throw new Error(`“${b.name}” функц олдсонгүй.`);
+        const params = splitNames(fn.expression);
+        const args = (
+          parseExpression(`[${b.expression}]`) as Extract<
+            Expression,
+            { type: "array" }
+          >
+        ).items.map((item) => evaluateNode(item, variables));
+        if (args.length !== params.length)
+          throw new Error(
+            `“${fn.name}” функц ${params.length} утга авна, ${args.length} өгөгдлөө.`,
+          );
+        if (++depth > 100)
+          throw new Error("Функцийн дуудлага хэт гүнзгий байна.");
+        yield { id: b.id, variables: { ...variables } };
+        const caller = variables;
+        variables = Object.create(null);
+        params.forEach((p, i) => (variables[p] = args[i]));
+        let returned: Return | undefined;
+        try {
+          returned = yield* visit(fn.children);
+        } finally {
+          variables = caller;
+          depth--;
+        }
+        if (b.result?.trim()) {
+          if (returned?.value === undefined)
+            throw new Error(`“${fn.name}” функц утга буцаасангүй.`);
+          store(b.result.trim(), returned.value);
+        }
+        yield { id: b.id, variables: { ...variables } };
       }
     }
+    return undefined;
   }
   yield* visit(blocks);
 }
@@ -341,6 +491,9 @@ export function validateProject(value: unknown): value is Project {
           typeof b.name === "string" &&
           typeof b.expression === "string" &&
           b.expression.length <= 1000 &&
+          (b.type === undefined || Object.hasOwn(variableTypes, b.type)) &&
+          (b.result === undefined ||
+            (typeof b.result === "string" && b.result.length <= 100)) &&
           validList(b.children, depth + 1) &&
           validList(b.otherwise, depth + 1)
         );

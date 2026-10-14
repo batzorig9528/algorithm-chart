@@ -154,6 +154,13 @@
   background: var(--block-bg);
   color: var(--block-color);
 }
+.purple {
+  --block-color: #281848;
+  --block-bg: #e8e0ff;
+  --block-border: #8070a8;
+  background: var(--block-bg);
+  color: var(--block-color);
+}
 .orange {
   --block-color: #402000;
   --block-bg: #ffe0b0;

@@ -5,6 +5,7 @@ import {
   block,
   flatten,
   splitForBounds,
+  splitNames,
   validateProject,
   type Block,
   type Kind,
@@ -72,9 +73,17 @@ export function useEditorController() {
   const allBlocks = flatten(project.blocks);
   const variableNames = [
     ...new Set([
-      ...allBlocks
-        .filter((b) => ["declare", "assign", "input", "for"].includes(b.kind))
-        .map((b) => targetName(b.name)),
+      ...allBlocks.flatMap((b) =>
+        b.kind === "declare"
+          ? splitNames(b.name)
+          : b.kind === "function"
+            ? splitNames(b.expression)
+            : b.kind === "call"
+              ? [targetName(b.result || "")]
+              : ["assign", "input", "for"].includes(b.kind)
+                ? [targetName(b.name)]
+                : [],
+      ),
       ...Object.keys(variables),
     ]),
   ].filter(Boolean);
@@ -111,8 +120,10 @@ export function useEditorController() {
   }
   function insert(kind: Kind, targetSlot?: Slot) {
     if (busy) return;
+    const created = block(kind, ...defaultValues[kind]);
+    if (kind === "declare") created.type = "int";
     setDraft({
-      block: block(kind, ...defaultValues[kind]),
+      block: created,
       slot: targetSlot ||
         slot || {
           parent: null,
@@ -131,21 +142,57 @@ export function useEditorController() {
       ...draft.block,
       name: draft.block.name.trim(),
       expression: draft.block.expression.trim(),
+      result: draft.block.result?.trim(),
     };
+    const validName = (n: string) =>
+      /^[A-Za-z_]\w*$/.test(n) && !["true", "false"].includes(n);
+    const nameError =
+      "Нэр латин үсэг эсвэл _-ээр эхэлнэ. true, false нэр ашиглахгүй.";
     try {
-      if (
-        ["declare", "assign", "input", "for"].includes(b.kind) &&
-        (!/^[A-Za-z_]\w*$/.test(
-          b.kind === "assign" || b.kind === "input"
-            ? targetName(b.name)
-            : b.name,
-        ) ||
-          ["true", "false"].includes(targetName(b.name)))
-      )
-        throw new Error(
-          "Нэр латин үсэг эсвэл _-ээр эхэлнэ. true, false нэр ашиглахгүй.",
+      if (b.kind === "declare") {
+        const names = splitNames(b.name);
+        if (!names.length || !names.every(validName))
+          throw new Error(nameError);
+        if (new Set(names).size !== names.length)
+          throw new Error("Нэг нэрийг давхар зарласан байна.");
+        if (b.expression) parseExpression(b.expression);
+        else if (!b.type) throw new Error("Эхний утгаа бичнэ үү.");
+      } else if (["assign", "input", "for"].includes(b.kind)) {
+        if (!validName(b.kind === "for" ? b.name : targetName(b.name)))
+          throw new Error(nameError);
+        if (b.kind !== "for") parseTarget(b.name);
+      } else if (b.kind === "function") {
+        const params = splitNames(b.expression);
+        if (!validName(b.name) || !params.every(validName))
+          throw new Error(nameError);
+        if (new Set(params).size !== params.length)
+          throw new Error("Нэг параметрийг давхар бичсэн байна.");
+        if (
+          allBlocks.some(
+            (o) => o.kind === "function" && o.id !== b.id && o.name === b.name,
+          )
+        )
+          throw new Error(`“${b.name}” нэртэй функц аль хэдийн байна.`);
+      } else if (b.kind === "call") {
+        const fn = allBlocks.find(
+          (o) => o.kind === "function" && o.name === b.name,
         );
-      if (b.kind === "assign" || b.kind === "input") parseTarget(b.name);
+        if (!fn)
+          throw new Error(
+            `“${b.name}” функц олдсонгүй. Эхлээд Функц блок нэмнэ үү.`,
+          );
+        const args = (
+          parseExpression(`[${b.expression}]`) as { items: unknown[] }
+        ).items.length;
+        if (args !== splitNames(fn.expression).length)
+          throw new Error(
+            `“${fn.name}” функц ${splitNames(fn.expression).length} утга авна.`,
+          );
+        if (b.result) {
+          parseTarget(b.result);
+          if (!validName(targetName(b.result))) throw new Error(nameError);
+        }
+      }
       if (b.kind === "for") {
         const [start, end, step] = splitForBounds(b.expression);
         if (!start || !end)
@@ -153,13 +200,19 @@ export function useEditorController() {
         parseExpression(start);
         parseExpression(end);
         if (step) parseExpression(step);
-      } else if (b.kind !== "input") parseExpression(b.expression);
+      } else if (
+        !["input", "declare", "function", "call"].includes(b.kind) &&
+        !(b.kind === "return" && !b.expression)
+      )
+        parseExpression(b.expression);
       commit(
         draft.slot
           ? insertProjectBlock(project, b, draft.slot)
           : updateProjectBlock(project, b.id, {
               name: b.name,
               expression: b.expression,
+              type: b.type,
+              result: b.result,
             }),
       );
       setSelected(b.id);

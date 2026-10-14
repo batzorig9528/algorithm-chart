@@ -1,13 +1,26 @@
 "use client";
 import { Braces, Square } from "lucide-react";
-import { formatValue } from "@/lib/flow";
+import { formatValue, splitNames, variableTypes } from "@/lib/flow";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
 import { ProblemPanel } from "./problem-panel";
 
 export function VariablesPanel() {
-  const { variableNames, variables, status, speed, setSpeed, busy, reset } =
-    useEditor();
+  const {
+    variableNames,
+    variables,
+    status,
+    speed,
+    setSpeed,
+    busy,
+    reset,
+    allBlocks,
+  } = useEditor();
+  const declared = new Map(
+    allBlocks
+      .filter((b) => b.kind === "declare" && b.type)
+      .flatMap((b) => splitNames(b.name).map((n) => [n, b.type!] as const)),
+  );
 
   return (
     <aside className="inspector">
@@ -35,20 +48,24 @@ export function VariablesPanel() {
                 {name}
               </span>
               <span>
-                {Object.hasOwn(variables, name)
-                  ? Array.isArray(variables[name])
-                    ? "Array"
-                    : typeof variables[name] === "number"
-                    ? "Number"
-                    : typeof variables[name] === "boolean"
-                      ? "Boolean"
-                      : "String"
-                  : "Auto"}
+                {declared.has(name)
+                  ? variableTypes[declared.get(name)!]
+                  : Object.hasOwn(variables, name)
+                    ? Array.isArray(variables[name])
+                      ? "Array"
+                      : typeof variables[name] === "number"
+                        ? "Number"
+                        : typeof variables[name] === "boolean"
+                          ? "Boolean"
+                          : "String"
+                    : "Auto"}
               </span>
               <code
                 className={Object.hasOwn(variables, name) ? "has-value" : ""}
               >
-                {Object.hasOwn(variables, name) ? formatValue(variables[name]) : "—"}
+                {Object.hasOwn(variables, name)
+                  ? formatValue(variables[name])
+                  : "—"}
               </code>
             </div>
           ))}

@@ -2,7 +2,12 @@
 import { Check, Trash2 } from "lucide-react";
 import { useEditor } from "@/contexts/editor-context";
 import { Modal } from "@/components/ui/modal";
-import { definitions, splitForBounds } from "@/lib/flow";
+import {
+  definitions,
+  splitForBounds,
+  variableTypes,
+  type VariableType,
+} from "@/lib/flow";
 
 export function BlockEditorDialog() {
   const { draft, setDraft, formError, setModal, saveBlock, remove } =
@@ -14,9 +19,41 @@ export function BlockEditorDialog() {
         <h2 id="modal-title">
           {definitions[draft.block.kind].label} {draft.slot ? "нэмэх" : "засах"}
         </h2>
-        {["declare", "assign", "input", "for"].includes(draft.block.kind) && (
+        {draft.block.kind === "declare" && (
+          <label htmlFor="block-type">
+            Төрөл
+            <select
+              id="block-type"
+              value={draft.block.type ?? "int"}
+              onChange={(e) =>
+                setDraft({
+                  ...draft,
+                  block: {
+                    ...draft.block,
+                    type: e.target.value as VariableType,
+                  },
+                })
+              }
+            >
+              {(Object.keys(variableTypes) as VariableType[]).map((t) => (
+                <option key={t} value={t}>
+                  {variableTypes[t]}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {["declare", "assign", "input", "for", "function", "call"].includes(
+          draft.block.kind,
+        ) && (
           <label htmlFor="block-name">
-            Хувьсагчийн нэр
+            {draft.block.kind === "declare"
+              ? "Хувьсагчийн нэрс (таслалаар тусгаарла)"
+              : draft.block.kind === "function"
+                ? "Функцийн нэр"
+                : draft.block.kind === "call"
+                  ? "Дуудах функцийн нэр"
+                  : "Хувьсагчийн нэр"}
             <input
               autoFocus
               id="block-name"
@@ -28,7 +65,31 @@ export function BlockEditorDialog() {
                   block: { ...draft.block, name: e.target.value },
                 })
               }
-              placeholder="Жишээ: x"
+              placeholder={
+                draft.block.kind === "declare"
+                  ? "Жишээ: a, b, c"
+                  : draft.block.kind === "function" ||
+                      draft.block.kind === "call"
+                    ? "Жишээ: sum"
+                    : "Жишээ: x"
+              }
+            />
+          </label>
+        )}
+        {draft.block.kind === "call" && (
+          <label htmlFor="block-result">
+            Үр дүнг хадгалах хувьсагч <span>(заавал биш)</span>
+            <input
+              id="block-result"
+              maxLength={100}
+              value={draft.block.result ?? ""}
+              onChange={(e) =>
+                setDraft({
+                  ...draft,
+                  block: { ...draft.block, result: e.target.value },
+                })
+              }
+              placeholder="Жишээ: total"
             />
           </label>
         )}
@@ -80,11 +141,23 @@ export function BlockEditorDialog() {
           })()}
         {draft.block.kind !== "input" && draft.block.kind !== "for" && (
           <label htmlFor="block-expression">
-            {["if", "while"].includes(draft.block.kind)
+            {["if", "while", "dowhile"].includes(draft.block.kind)
               ? "Нөхцөл"
-              : "Илэрхийлэл"}
+              : draft.block.kind === "declare"
+                ? "Эхний утга (заавал биш)"
+                : draft.block.kind === "function"
+                  ? "Параметрүүд (таслалаар тусгаарла)"
+                  : draft.block.kind === "call"
+                    ? "Дамжуулах утгууд (таслалаар тусгаарла)"
+                    : draft.block.kind === "return"
+                      ? "Буцаах утга (заавал биш)"
+                      : "Илэрхийлэл"}
             <textarea
-              autoFocus={!["declare", "assign"].includes(draft.block.kind)}
+              autoFocus={
+                !["declare", "assign", "function", "call"].includes(
+                  draft.block.kind,
+                )
+              }
               id="block-expression"
               maxLength={1000}
               value={draft.block.expression}
@@ -94,7 +167,13 @@ export function BlockEditorDialog() {
                   block: { ...draft.block, expression: e.target.value },
                 })
               }
-              placeholder="Жишээ: a + b"
+              placeholder={
+                draft.block.kind === "function"
+                  ? "Жишээ: a, b"
+                  : draft.block.kind === "call"
+                    ? "Жишээ: 3, x + 1"
+                    : "Жишээ: a + b"
+              }
               rows={3}
             />
           </label>

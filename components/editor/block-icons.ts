@@ -6,6 +6,10 @@ import {
   GitBranch,
   RotateCcw,
   Repeat,
+  RefreshCw,
+  Box,
+  PhoneCall,
+  CornerDownLeft,
 } from "lucide-react";
 export const icons = {
   declare: Braces,
@@ -14,5 +18,9 @@ export const icons = {
   assign: Sigma,
   if: GitBranch,
   while: RotateCcw,
+  dowhile: RefreshCw,
   for: Repeat,
+  function: Box,
+  call: PhoneCall,
+  return: CornerDownLeft,
 };

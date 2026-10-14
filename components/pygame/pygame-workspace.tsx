@@ -1,0 +1,137 @@
+"use client";
+
+import { useRef, useState, type KeyboardEvent } from "react";
+import { Code2, Download, Gamepad2, Play, RotateCcw } from "lucide-react";
+import { downloadText } from "@/lib/download";
+import { PYGAME_EXAMPLE } from "@/lib/pygame";
+import { PygameResult } from "@/components/pygame/pygame-result";
+
+export function PygameWorkspace() {
+  const [code, setCode] = useState(PYGAME_EXAMPLE);
+  const [run, setRun] = useState<{ code: string } | null>(null);
+  const editor = useRef<HTMLTextAreaElement>(null);
+  const gutter = useRef<HTMLDivElement>(null);
+  const runButton = useRef<HTMLButtonElement>(null);
+
+  function indent(event: KeyboardEvent<HTMLTextAreaElement>) {
+    // Shift+Tab leaves the editor for keyboard-only navigation.
+    if (event.key !== "Tab" || event.shiftKey || event.altKey || event.ctrlKey)
+      return;
+    event.preventDefault();
+    const input = event.currentTarget;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    setCode(code.slice(0, start) + "    " + code.slice(end));
+    requestAnimationFrame(() => input.setSelectionRange(start + 4, start + 4));
+  }
+
+  return (
+    <main className="content-page pygame-page">
+      <section className="pygame-workspace" aria-labelledby="pygame-title">
+        <div className="pygame-heading">
+          <span className="pygame-badge">
+            <Gamepad2 size={16} /> PYTHON × PYGAME
+          </span>
+          <h1 id="pygame-title">Кодоор тоглоом бүтээе</h1>
+          <p>
+            Python кодоо бичээд ажиллуулаарай. Тоглоом тань тусдаа цонхонд
+            нээгдэнэ.
+          </p>
+        </div>
+        <div className="pygame-editor-card">
+          <div className="pygame-toolbar">
+            <label htmlFor="pygame-code" className="pygame-filename">
+              <Code2 size={17} /> main.py
+            </label>
+            <div className="pygame-actions">
+              <button
+                type="button"
+                className="pygame-button"
+                onClick={() => {
+                  setCode(PYGAME_EXAMPLE);
+                  if (editor.current) editor.current.scrollTop = 0;
+                  editor.current?.focus();
+                }}
+              >
+                <RotateCcw size={15} /> Жишээг сэргээх
+              </button>
+              <button
+                type="button"
+                className="pygame-button"
+                onClick={() =>
+                  downloadText(code, "main.py", "text/x-python;charset=utf-8")
+                }
+              >
+                <Download size={15} /> .py татах
+              </button>
+              <button
+                ref={runButton}
+                type="button"
+                className="pygame-button pygame-primary"
+                disabled={!code.trim()}
+                onClick={() => setRun({ code })}
+              >
+                <Play size={15} /> Ажиллуулах
+              </button>
+            </div>
+          </div>
+          <div className="pygame-code-editor">
+            <div
+              className="pygame-line-numbers"
+              ref={gutter}
+              aria-hidden="true"
+            >
+              {code.split("\n").map((_, index) => (
+                <div key={index}>{index + 1}</div>
+              ))}
+            </div>
+            <textarea
+              ref={editor}
+              id="pygame-code"
+              aria-label="Pygame Python код"
+              aria-describedby="pygame-code-help"
+              value={code}
+              onChange={(event) => setCode(event.target.value)}
+              onKeyDown={indent}
+              onScroll={(event) => {
+                if (gutter.current)
+                  gutter.current.scrollTop = event.currentTarget.scrollTop;
+              }}
+              spellCheck={false}
+              autoCapitalize="off"
+              autoCorrect="off"
+              wrap="off"
+            />
+          </div>
+          <div className="pygame-editor-footer">
+            <span>Python 3.12 · pygame-ce</span>
+            <span>Tab: 4 зай · Shift+Tab: талбараас гарах</span>
+          </div>
+        </div>
+        <div className="pygame-help" id="pygame-code-help">
+          <p>
+            <strong>Хөтөч дээр ажиллах давталт</strong> —{" "}
+            <code>async def main()</code> доторх тоглоомын давталт бүрд{" "}
+            <code>await asyncio.sleep(0)</code> оруулж, төгсгөлд{" "}
+            <code>asyncio.run(main())</code> дуудаарай. Завсарлагагүй давталт
+            хөтчийг гацааж болно.
+          </p>
+          <p>
+            Эхний ачаалалд интернет хэрэгтэй. Нэг Python файл ажиллана; зураг,
+            дуу оруулах боломжгүй. Хуудсаас гарахаасаа өмнө кодоо{" "}
+            <strong>.py татах</strong> товчоор аваарай.
+          </p>
+        </div>
+      </section>
+      {run && (
+        <PygameResult
+          code={run.code}
+          onClose={() => {
+            setRun(null);
+            requestAnimationFrame(() => runButton.current?.focus());
+          }}
+        />
+      )}
+    </main>
+  );
+}

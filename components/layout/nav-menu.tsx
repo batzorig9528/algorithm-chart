@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   CircleHelp,
+  Gamepad2,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -17,6 +18,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const navigation = [
   { href: "/editor", label: "Засварлагч", icon: Workflow },
+  { href: "/pygame", label: "Pygame", icon: Gamepad2 },
   { href: "/problems", label: "Бодлогын сан", icon: BookOpen },
   { href: "/help", label: "Тусламж", icon: CircleHelp },
 ];

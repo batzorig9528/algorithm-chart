@@ -1,6 +1,11 @@
 "use client";
 import { RotateCcw } from "lucide-react";
-import { definitions, splitForBounds, type Block } from "@/lib/flow";
+import {
+  definitions,
+  splitForBounds,
+  variableTypes,
+  type Block,
+} from "@/lib/flow";
 import { useEditor } from "@/contexts/editor-context";
 import { icons } from "./block-icons";
 import { BlockConnector } from "./block-connector";
@@ -27,13 +32,49 @@ export function FlowDiagram({
         const expression =
           b.kind === "input"
             ? b.name
-            : b.kind === "declare" || b.kind === "assign"
-              ? `${b.name} = ${b.expression}`
-              : b.kind === "for"
-                ? forLabel(b)
-                : b.expression;
+            : b.kind === "declare"
+              ? `${b.type ? `${variableTypes[b.type]}: ` : ""}${b.name}${b.expression ? ` = ${b.expression}` : ""}`
+              : b.kind === "assign"
+                ? `${b.name} = ${b.expression}`
+                : b.kind === "for"
+                  ? forLabel(b)
+                  : b.kind === "function"
+                    ? `${b.name}(${b.expression})`
+                    : b.kind === "call"
+                      ? `${b.result ? `${b.result} = ` : ""}${b.name}(${b.expression})`
+                      : b.expression;
+        const hasBody = ["if", "while", "dowhile", "for", "function"].includes(
+          b.kind,
+        );
+        const body = hasBody && (
+          <div className={`branches ${b.kind !== "if" ? "loop" : ""}`}>
+            <div className="branch">
+              <span className="branch-label">
+                {b.kind === "function" ? "Бие" : "Тийм"}
+              </span>
+              <FlowDiagram list={b.children} parent={b.id} branch="children" />
+            </div>
+            {b.kind === "if" ? (
+              <div className="branch">
+                <span className="branch-label no">Үгүй</span>
+                <FlowDiagram
+                  list={b.otherwise}
+                  parent={b.id}
+                  branch="otherwise"
+                />
+              </div>
+            ) : (
+              b.kind !== "function" && (
+                <span className="loop-return">
+                  <RotateCcw size={15} /> Давтах
+                </span>
+              )
+            )}
+          </div>
+        );
         return (
           <div className="flow-item" key={b.id}>
+            {b.kind === "dowhile" && body}
             <button
               onClick={() => {
                 editBlock(b);
@@ -50,32 +91,7 @@ export function FlowDiagram({
               </span>
               <span className="block-dot" />
             </button>
-            {(b.kind === "if" || b.kind === "while" || b.kind === "for") && (
-              <div className={`branches ${b.kind !== "if" ? "loop" : ""}`}>
-                <div className="branch">
-                  <span className="branch-label">Тийм</span>
-                  <FlowDiagram
-                    list={b.children}
-                    parent={b.id}
-                    branch="children"
-                  />
-                </div>
-                {b.kind === "if" ? (
-                  <div className="branch">
-                    <span className="branch-label no">Үгүй</span>
-                    <FlowDiagram
-                      list={b.otherwise}
-                      parent={b.id}
-                      branch="otherwise"
-                    />
-                  </div>
-                ) : (
-                  <span className="loop-return">
-                    <RotateCcw size={15} /> Давтах
-                  </span>
-                )}
-              </div>
-            )}
+            {b.kind !== "dowhile" && body}
             <BlockConnector parent={parent} branch={branch} index={i + 1} />
           </div>
         );

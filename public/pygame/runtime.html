@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="mn">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pygame тоглоом</title>
+    <style>
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #161828; }
+      body { display: flex; align-items: center; justify-content: center; }
+      body > :not(#canvas) { display: none !important; }
+      #canvas { display: block; outline: none; touch-action: none; }
+      #canvas:focus-visible { outline: 2px solid #a08fff; outline-offset: -2px; }
+    </style>
+    <script>
+      // This document is always loaded in an opaque-origin sandbox. Never add
+      // allow-same-origin: Python has a JavaScript bridge inside this frame.
+      window.config = {
+        cdn: "https://pygame-web.github.io/archives/0.9/",
+        ume_block: 0,
+        can_close: 0,
+        gui_divider: 1,
+        user_canvas: 1,
+      };
+      (() => {
+        const channel = "flow-pygame-v1";
+        const runId = location.hash.slice(1);
+        let pending = "";
+        let flushTimer;
+        let terminalError = false;
+        const send = (message) => parent.postMessage({ ...message, channel, runId }, "*");
+        const flush = () => {
+          clearTimeout(flushTimer);
+          flushTimer = undefined;
+          if (pending) { send({ type: "output", text: pending }); pending = ""; }
+        };
+        window.flowHasSource = false;
+        window.flowSource = "";
+        window.flowEmit = (serialized) => {
+          const message = JSON.parse(serialized);
+          if (message.type === "output") {
+            pending = (pending + message.text).slice(-100000);
+            if (flushTimer === undefined) flushTimer = setTimeout(flush, 50);
+          } else {
+            flush();
+            send(message);
+          }
+        };
+        window.flowLoadError = () => {
+          if (terminalError) return;
+          terminalError = true;
+          flush();
+          send({ type: "error", text: "Pygame ачаалж чадсангүй. Интернет холболтоо шалгаад дахин ажиллуулна уу.\n" });
+        };
+        addEventListener("message", (event) => {
+          const message = event.data;
+          if (event.source !== parent || !message || message.channel !== channel ||
+              message.runId !== runId || message.type !== "run" ||
+              typeof message.code !== "string" || window.flowHasSource || terminalError) return;
+          window.flowSource = message.code;
+          window.flowHasSource = true;
+        });
+        addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            flush();
+            send({ type: "close" });
+          }
+        });
+        addEventListener("error", window.flowLoadError);
+        addEventListener("unhandledrejection", window.flowLoadError);
+      })();
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="640" height="400" tabindex="0" aria-label="Pygame дэлгэц"></canvas>
+    <script>
+      (() => {
+        const canvas = document.getElementById("canvas");
+        const fit = () => {
+          const scale = Math.min(innerWidth / canvas.width, innerHeight / canvas.height);
+          canvas.style.width = `${canvas.width * scale}px`;
+          canvas.style.height = `${canvas.height * scale}px`;
+        };
+        new MutationObserver(fit).observe(canvas, { attributes: true, attributeFilter: ["width", "height"] });
+        addEventListener("resize", fit);
+        canvas.addEventListener("pointerdown", () => canvas.focus());
+        canvas.addEventListener("contextmenu", (event) => event.preventDefault());
+        fit();
+      })();
+    </script>
+    <script type="module" id="site" data-python="python3.12" data-os="fs,gui,stdout"
+      src="https://pygame-web.github.io/archives/0.9/pythons.js" onerror="flowLoadError()">#<!--
+import asyncio
+import contextvars
+import json
+import linecache
+import platform
+import sys
+import traceback
+import pygame
+
+
+async def custom_site():
+    def emit(kind, text=None):
+        message = {"type": kind}
+        if text is not None:
+            message["text"] = text
+        platform.window.flowEmit(json.dumps(message))
+
+    emit("ready")
+    while not platform.window.flowHasSource:
+        await asyncio.sleep(0)
+
+    source = str(platform.window.flowSource)
+    # Preserve main.py and source lines in both synchronous and async tracebacks.
+    linecache.cache["main.py"] = (len(source), None, source.splitlines(True), "main.py")
+    user_context = contextvars.ContextVar("flow_user_code", default=False)
+    old_stdout, old_stderr = sys.stdout, sys.stderr
+
+    class Output:
+        encoding = "utf-8"
+
+        def __init__(self, original):
+            self.original = original
+
+        def write(self, text):
+            if user_context.get():
+                emit("output", str(text)[-100000:])
+            else:
+                self.original.write(text)
+            return len(text)
+
+        def flush(self):
+            pass
+
+        def isatty(self):
+            return False
+
+    sys.stdout, sys.stderr = Output(old_stdout), Output(old_stderr)
+    loop = asyncio.get_running_loop()
+    old_factory = loop.get_task_factory()
+    old_exception_handler = loop.get_exception_handler()
+    old_run = asyncio.run
+    old_exit = sys.exit
+    tasks = set()
+    failed = False
+
+    def fail(error):
+        nonlocal failed
+        if failed:
+            return
+        failed = True
+        emit("error", "".join(traceback.format_exception(error)))
+
+    def task_done(task):
+        tasks.discard(task)
+
+    def exception_handler(loop, context):
+        task = context.get("task") or context.get("future")
+        if getattr(task, "flow_user_task", False) and context.get("exception"):
+            fail(context["exception"])
+        elif old_exception_handler:
+            old_exception_handler(loop, context)
+        else:
+            loop.default_exception_handler(context)
+
+    async def entrypoint(coro):
+        try:
+            return await coro
+        except SystemExit as error:
+            if error.code not in (None, 0):
+                fail(error)
+        except asyncio.CancelledError:
+            raise
+        except BaseException as error:
+            fail(error)
+
+    def run(coro, *, debug=False):
+        # Pygbag's run() schedules rather than blocks. Guard the entrypoint;
+        # exceptions in tasks awaited/caught by user code remain normal Python.
+        return old_run(entrypoint(coro), debug=debug)
+
+    def exit_program(code=0):
+        # Pygbag replaces sys.exit with a shutdown of the entire host loop.
+        # Use Python's usual exception so we can report completion first.
+        raise SystemExit(code)
+
+    def task_factory(loop, coro, context=None):
+        kwargs = {} if context is None else {"context": context}
+        task = old_factory(loop, coro, **kwargs) if old_factory else asyncio.Task(coro, loop=loop, **kwargs)
+        is_user = user_context.get() if context is None else context.get(user_context, False)
+        if is_user:
+            task.flow_user_task = True
+            tasks.add(task)
+            task.add_done_callback(task_done)
+        return task
+
+    loop.set_task_factory(task_factory)
+    loop.set_exception_handler(exception_handler)
+    asyncio.run = run
+    sys.exit = exit_program
+    token = user_context.set(True)
+    try:
+        emit("running")
+        platform.window.canvas.focus()
+        namespace = {"__name__": "__main__", "__file__": "main.py"}
+        exec(compile(source, "main.py", "exec"), namespace)
+    except SystemExit as error:
+        if error.code not in (None, 0):
+            fail(error)
+    except BaseException as error:
+        fail(error)
+    finally:
+        user_context.reset(token)
+
+    try:
+        while tasks and not failed:
+            await asyncio.sleep(0)
+        # Let task callbacks and unhandled-exception notifications settle.
+        await asyncio.sleep(0)
+        if failed:
+            for task in list(tasks):
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*list(tasks), return_exceptions=True)
+        else:
+            emit("completed")
+    finally:
+        loop.set_task_factory(old_factory)
+        loop.set_exception_handler(old_exception_handler)
+        asyncio.run = old_run
+        sys.exit = old_exit
+        sys.stdout, sys.stderr = old_stdout, old_stderr
+
+
+asyncio.run(custom_site())
+# --></script>
+  </body>
+</html>

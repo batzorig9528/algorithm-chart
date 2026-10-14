@@ -1,4 +1,10 @@
-import { type Block, flatten, splitForBounds } from "./flow";
+import {
+  type Block,
+  type VariableType,
+  flatten,
+  splitForBounds,
+  splitNames,
+} from "./flow";
 import {
   type Expression,
   parseExpression,
@@ -86,9 +92,43 @@ export function pythonCode(blocks: Block[]): string {
   const names = new Map<string, string>();
   const occupied = new Set(
     flatten(blocks)
-      .map((b) => targetName(b.name))
+      .flatMap((b) =>
+        b.kind === "declare"
+          ? splitNames(b.name)
+          : b.kind === "function"
+            ? splitNames(b.expression)
+            : b.kind === "call"
+              ? [targetName(b.result || "")]
+              : b.kind === "return"
+                ? []
+                : [targetName(b.name)],
+      )
       .filter(Boolean),
   );
+  const functionName = (value: string) => {
+    if (!/^[A-Za-z_]\w*$/.test(value))
+      throw new Error(`Функцийн нэрийг шалгана уу: ${value}`);
+    return `fn_${value}`;
+  };
+  const initial: Record<VariableType, string> = {
+    int: "0",
+    real: "0",
+    string: '""',
+    boolean: "False",
+    array: "[]",
+  };
+  const hasLoop = (list: Block[]): boolean =>
+    list.some(
+      (b) =>
+        b.kind !== "function" &&
+        (["while", "dowhile", "for"].includes(b.kind) ||
+          hasLoop(b.children) ||
+          hasLoop(b.otherwise)),
+    );
+  const counter = (list: Block[]) =>
+    hasLoop(list) ? "    _flow_steps = 0\n" : "";
+  const guard = (pad: string) =>
+    `${pad}    _flow_steps += 1\n${pad}    if _flow_steps > 10000:\n${pad}        raise RuntimeError("Давталтын хязгаарт хүрлээ.")\n`;
   function name(value: string) {
     if (!/^[A-Za-z_]\w*$/.test(value))
       throw new Error(`Хувьсагчийн нэрийг шалгана уу: ${value}`);
@@ -169,9 +209,34 @@ export function pythonCode(blocks: Block[]): string {
   }
   function emit(list: Block[], depth: number): string {
     const pad = "    ".repeat(depth);
-    if (!list.length) return `${pad}pass`;
-    return list
+    const items = list.filter((b) => b.kind !== "function");
+    if (!items.length) return `${pad}pass`;
+    return items
       .map((b) => {
+        if (b.kind === "declare") {
+          const names = splitNames(b.name);
+          if (!names.length) throw new Error("Хувьсагчийн нэрийг шалгана уу.");
+          const value = b.expression.trim()
+            ? render(parseExpression(b.expression))
+            : b.type
+              ? initial[b.type]
+              : (() => {
+                  throw new Error("Хувьсагчийн эхний утгыг бичнэ үү.");
+                })();
+          return names.map((n) => `${pad}${name(n)} = ${value}`).join("\n");
+        }
+        if (b.kind === "call") {
+          const args = (
+            parseExpression(`[${b.expression}]`) as Extract<
+              Expression,
+              { type: "array" }
+            >
+          ).items.map(render);
+          const result = b.result?.trim();
+          return `${pad}${result ? `${name(result)} = ` : ""}${functionName(b.name.trim())}(${args.join(", ")})`;
+        }
+        if (b.kind === "return")
+          return `${pad}return${b.expression.trim() ? ` ${render(parseExpression(b.expression))}` : ""}`;
         if (b.kind === "input") {
           if (!b.name.includes("["))
             return `${pad}${name(b.name)} = ${helper("read")}()`;
@@ -185,13 +250,15 @@ export function pythonCode(blocks: Block[]): string {
           const stop = step
             ? `${bound(end)} + (1 if ${bound(step)} > 0 else -1), ${bound(step)}`
             : `${bound(end)} + 1`;
-          return `${pad}for ${name(b.name)} in range(${bound(start)}, ${stop}):\n${pad}    _flow_steps += 1\n${pad}    if _flow_steps > 10000:\n${pad}        raise RuntimeError("Давталтын хязгаарт хүрлээ.")\n${emit(b.children, depth + 1)}`;
+          return `${pad}for ${name(b.name)} in range(${bound(start)}, ${stop}):\n${guard(pad)}${emit(b.children, depth + 1)}`;
         }
         const expression = render(parseExpression(b.expression));
         if (b.kind === "if")
           return `${pad}if ${expression}:\n${emit(b.children, depth + 1)}${b.otherwise.length ? `\n${pad}else:\n${emit(b.otherwise, depth + 1)}` : ""}`;
         if (b.kind === "while")
-          return `${pad}while ${expression}:\n${pad}    _flow_steps += 1\n${pad}    if _flow_steps > 10000:\n${pad}        raise RuntimeError("Давталтын хязгаарт хүрлээ.")\n${emit(b.children, depth + 1)}`;
+          return `${pad}while ${expression}:\n${guard(pad)}${emit(b.children, depth + 1)}`;
+        if (b.kind === "dowhile")
+          return `${pad}while True:\n${guard(pad)}${emit(b.children, depth + 1)}\n${pad}    if not ${expression}:\n${pad}        break`;
         if (b.kind === "output")
           return `${pad}print(${helper("text")}(${expression}))`;
         if (b.kind === "assign" && b.name.includes("[")) {
@@ -203,11 +270,14 @@ export function pythonCode(blocks: Block[]): string {
       .join("\n");
   }
   const body = emit(blocks, 1);
-  const loopCounter = flatten(blocks).some(
-    (b) => b.kind === "while" || b.kind === "for",
-  )
-    ? "    _flow_steps = 0\n"
-    : "";
+  const loopCounter = counter(blocks);
+  const defs = flatten(blocks)
+    .filter((b) => b.kind === "function")
+    .map((b) => {
+      const params = splitNames(b.expression).map(name).join(", ");
+      return `def ${functionName(b.name.trim())}(${params}):\n${counter(b.children)}${emit(b.children, 1)}`;
+    })
+    .join("\n\n");
   const support = [...used].map((key) => helpers[key]).join("\n\n");
-  return `# Python 3 · Flow блокоос үүсгэсэн код\ndef main():\n${loopCounter}${body}\n${support ? `\n\n# Оролт болон тоо/текстийн үйлдлүүд\n${support}\n` : ""}\n\nif __name__ == "__main__":\n    main()\n`;
+  return `# Python 3 · Flow блокоос үүсгэсэн код\ndef main():\n${loopCounter}${body}\n${defs ? `\n\n${defs}\n` : ""}${support ? `\n\n# Оролт болон тоо/текстийн үйлдлүүд\n${support}\n` : ""}\n\nif __name__ == "__main__":\n    main()\n`;
 }
