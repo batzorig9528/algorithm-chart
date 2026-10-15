@@ -2,7 +2,7 @@
 import { Plus } from "lucide-react";
 import { definitions, type Kind } from "@/lib/flow";
 import { useEditor } from "@/contexts/editor-context";
-import { icons } from "./block-icons";
+import { BlockShapeIcon } from "./block-shape";
 import type { Slot } from "@/types/editor";
 export function BlockConnector({ parent, branch, index }: Slot) {
   const { slot, setSlot, busy, insert } = useEditor();
@@ -32,10 +32,9 @@ export function BlockConnector({ parent, branch, index }: Slot) {
       {isOpen && (
         <div className="insert-menu">
           {(Object.keys(definitions) as Kind[]).map((k) => {
-            const Icon = icons[k];
             return (
               <button key={k} onClick={() => insert(k, location)}>
-                <Icon size={15} />
+                <BlockShapeIcon kind={k} />
                 {definitions[k].label}
               </button>
             );

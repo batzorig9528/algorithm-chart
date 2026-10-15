@@ -277,7 +277,9 @@
   position: absolute;
   top: 0;
   left: 18px;
-  width: 150px;
+  width: 190px;
+  max-height: min(360px, 60dvh);
+  overflow-y: auto;
   background: var(--k41);
   border: 1px solid var(--k42);
   box-shadow: 0 6px 25px var(--k43);
@@ -298,6 +300,10 @@
 }
 .insert-menu button:hover {
   background: var(--k45);
+}
+.insert-menu .block-shape {
+  width: 28px;
+  height: 22px;
 }
 .canvas-bottom {
   position: absolute;

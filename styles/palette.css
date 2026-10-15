@@ -108,6 +108,10 @@
   border-radius: 9px;
   flex-shrink: 0;
 }
+svg.block-shape {
+  flex-shrink: 0;
+  background: transparent;
+}
 .palette-item strong {
   font-size: 12px;
   font-weight: 700;

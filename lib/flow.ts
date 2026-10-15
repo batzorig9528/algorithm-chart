@@ -49,73 +49,97 @@ export type Frame = {
   output?: string;
   input?: string;
 };
+export type BlockShape =
+  | "rectangle"
+  | "parallelogram"
+  | "diamond"
+  | "hexagon"
+  | "subroutine"
+  | "terminator";
 export const definitions: Record<
   Kind,
-  { label: string; english: string; description: string; color: string }
+  {
+    label: string;
+    english: string;
+    description: string;
+    color: string;
+    shape: BlockShape;
+  }
 > = {
   declare: {
     label: "Хувьсагч",
     english: "Declare",
+    shape: "rectangle",
     description: "Хувьсагч зарлах",
     color: "yellow",
   },
   input: {
     label: "Оролт",
     english: "Input",
+    shape: "parallelogram",
     description: "Гараас утга авах",
     color: "blue",
   },
   output: {
     label: "Гаралт",
     english: "Output",
+    shape: "parallelogram",
     description: "Үр дүнг хэвлэх",
     color: "green",
   },
   assign: {
     label: "Утга олгох",
     english: "Assign",
+    shape: "rectangle",
     description: "Тооцоолол хийх",
     color: "yellow",
   },
   if: {
     label: "Нөхцөл",
     english: "If / Else",
+    shape: "diamond",
     description: "Нөхцөл шалгах",
     color: "red",
   },
   while: {
     label: "Давталт",
     english: "While",
+    shape: "diamond",
     description: "Нөхцөл биелэх хооронд давтах",
     color: "orange",
   },
   dowhile: {
     label: "Заавал давталт",
     english: "Do while",
+    shape: "diamond",
     description: "Нэг удаа гүйцэтгээд, нөхцөл биелэх хооронд давтах",
     color: "orange",
   },
   for: {
     label: "Тоолуур давталт",
     english: "For",
+    shape: "hexagon",
     description: "Эхлэлээс төгсгөл хүртэл 1-ээр нэмэгдэн давтах",
     color: "orange",
   },
   function: {
     label: "Функц",
     english: "Function",
+    shape: "subroutine",
     description: "Дахин ашиглах хэсэг тодорхойлох",
     color: "purple",
   },
   call: {
     label: "Функц дуудах",
     english: "Call",
+    shape: "subroutine",
     description: "Тодорхойлсон функцээ дуудах",
     color: "purple",
   },
   return: {
     label: "Буцаах",
     english: "Return",
+    shape: "terminator",
     description: "Функцээс утга буцааж гарах",
     color: "purple",
   },

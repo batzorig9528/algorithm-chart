@@ -3,7 +3,7 @@ import { Grip, PanelLeftClose, Search } from "lucide-react";
 import { useState } from "react";
 import { useEditor } from "@/contexts/editor-context";
 import { IconButton } from "@/components/ui/icon-button";
-import { icons } from "@/components/editor/block-icons";
+import { BlockShapeIcon } from "@/components/editor/block-shape";
 import { Kind, definitions } from "@/lib/flow";
 
 export function BlockPalette() {
@@ -39,7 +39,6 @@ export function BlockPalette() {
           )
           .map((k) => {
             const def = definitions[k];
-            const Icon = icons[k];
             return (
               <button
                 disabled={busy}
@@ -49,8 +48,8 @@ export function BlockPalette() {
                 key={k}
                 onClick={() => insert(k)}
               >
-                <span className={`palette-icon ${def.color}`}>
-                  <Icon size={19} />
+                <span className="palette-icon">
+                  <BlockShapeIcon kind={k} />
                 </span>
                 <span>
                   <strong>{def.label}</strong>
