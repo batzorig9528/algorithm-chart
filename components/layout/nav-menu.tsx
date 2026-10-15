@@ -10,6 +10,8 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Trophy,
+  UserRound,
   Workflow,
   X,
 } from "lucide-react";
@@ -20,6 +22,7 @@ const navigation = [
   { href: "/editor", label: "Засварлагч", icon: Workflow },
   { href: "/pygame", label: "Pygame", icon: Gamepad2 },
   { href: "/problems", label: "Бодлогын сан", icon: BookOpen },
+  { href: "/rank", label: "Эрэмбэ", icon: Trophy },
   { href: "/help", label: "Тусламж", icon: CircleHelp },
 ];
 const isTeacherRole = (role?: string) =>
@@ -83,6 +86,17 @@ export function NavMenu() {
                 <span className="menu-user" title={user.email}>
                   {user.name || user.email}
                 </span>
+                <Link
+                  href={`/profile/${user.id}`}
+                  role="menuitem"
+                  className="menu-item"
+                  aria-current={
+                    pathname === `/profile/${user.id}` ? "page" : undefined
+                  }
+                >
+                  <UserRound size={16} />
+                  Миний профайл
+                </Link>
                 <button
                   type="button"
                   role="menuitem"
