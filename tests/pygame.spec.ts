@@ -1,6 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
 import { PYGAME_EXAMPLE, PYGAME_CHANNEL, PYGAME_LOAD_TIMEOUT } from "../lib/pygame";
 
+async function openFull(page: Page) {
+  await page.goto('/pygame');
+  await page.getByLabel('Ажиллуулах горим').selectOption('full');
+  await page.getByRole('button', { name: 'Жишээг сэргээх' }).click();
+}
+
 const editor = (page: Page) =>
   page.getByRole("textbox", { name: "Pygame Python код" });
 const run = (page: Page) =>
@@ -13,7 +19,7 @@ test("pygame editor, download, navigation, modal and responsive layout", async (
   await page.route("https://pygame-web.github.io/**", (route) =>
     route.fulfill({ contentType: "text/javascript", body: "" }),
   );
-  await page.goto("/pygame");
+  await openFull(page);
   await expect(editor(page)).toHaveValue(PYGAME_EXAMPLE);
   await editor(page).fill("print('Сайн уу')");
   await editor(page).press("Home");
@@ -69,6 +75,7 @@ test("pygame editor, download, navigation, modal and responsive layout", async (
   await expect.poll(() => page.evaluate(() => localStorage.getItem("flow-pygame-draft-v1"))).toBe("changed");
   await page.reload();
   await expect(editor(page)).toHaveValue("changed");
+  await page.getByLabel("Ажиллуулах горим").selectOption("full");
   await editor(page).fill("");
   await expect(run(page)).toBeDisabled();
   await page.getByRole("button", { name: "Жишээг сэргээх" }).click();
@@ -90,7 +97,7 @@ test("pygame reports a failed runtime download and can retry", async ({
   page,
 }) => {
   await page.route("https://pygame-web.github.io/**", (route) => route.abort());
-  await page.goto("/pygame");
+  await openFull(page);
   await run(page).click();
   await expect(page.locator(".pygame-status")).toHaveText("Алдаа гарлаа");
   await expect(consoleOutput(page)).toContainText("Интернет холболтоо шалгаад");
@@ -113,7 +120,7 @@ test("prepares one runtime before Run and starts the latest code in that same fr
       });
       parent.postMessage({channel:'flow-pygame-v1',runId,type:'ready'}, '*');`,
   }));
-  await page.goto("/pygame");
+  await openFull(page);
   await expect(page.getByText("Pygame бэлэн — кодоо шууд ажиллуулж болно.")).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.locator("iframe")).toHaveCount(1);
@@ -137,7 +144,7 @@ test("prepares one runtime before Run and starts the latest code in that same fr
 test("slow runtime stays alive, can keep waiting, and can be cancelled", async ({ page }) => {
   await page.route("https://pygame-web.github.io/**", route => route.fulfill({ contentType: "text/javascript", body: "" }));
   await page.clock.install();
-  await page.goto("/pygame");
+  await openFull(page);
   await run(page).click();
   const src = await page.locator("iframe").getAttribute("src");
   await page.clock.fastForward(60_001);
@@ -153,7 +160,7 @@ test("slow runtime stays alive, can keep waiting, and can be cancelled", async (
 });
 
 test("Python editor completes, highlights, diagnoses and restores drafts", async ({ page }) => {
-  await page.goto("/pygame");
+  await openFull(page);
   await editor(page).fill("pri");
   await expect(page.getByRole("option", { name: /print/ })).toBeVisible();
   await editor(page).press("Enter");
@@ -187,7 +194,7 @@ test.describe("real Pygame runtime", () => {
   test("renders moving pixels, accepts keyboard/mouse, stops and restarts", async ({
     page,
   }) => {
-    await page.goto("/pygame");
+    await openFull(page);
     await run(page).click();
     await expect(page.locator(".pygame-status")).toHaveText("Ажиллаж байна", {
       timeout: 65_000,
@@ -259,7 +266,7 @@ asyncio.run(main())`);
   test("reports completion, syntax errors and asynchronous tracebacks", async ({
     page,
   }) => {
-    await page.goto("/pygame");
+    await openFull(page);
     for (const scenario of [
       {
         code: "print('Сайн уу </script> 🌟')",

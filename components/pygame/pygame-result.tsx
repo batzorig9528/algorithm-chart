@@ -24,7 +24,9 @@ export function PygameResult({
   code,
   onClose,
   onStatus,
+  mode,
 }: {
+  mode: "light" | "full";
   code: string | null;
   onClose: () => void;
   onStatus: (status: PygameStatus) => void;
@@ -40,6 +42,7 @@ export function PygameResult({
       <h2 id="modal-title">Pygame үр дүн</h2>
       <PygameRun
         key={attempt}
+        mode={mode}
         code={code}
         onClose={close}
         onStatus={onStatus}
@@ -54,7 +57,9 @@ function PygameRun({
   onClose,
   onRestart,
   onStatus,
+  mode,
 }: {
+  mode: "light" | "full";
   code: string | null;
   onClose: () => void;
   onRestart: () => void;
@@ -78,7 +83,7 @@ function PygameRun({
     iframe.title = "Pygame тоглоом";
     iframe.className = "pygame-frame";
     iframe.setAttribute("sandbox", "allow-scripts");
-    iframe.src = `/pygame/runtime.html#${runId}`;
+    iframe.src = `${mode === "light" ? "/pygame/light/runtime.html" : "/pygame/runtime.html"}#${runId}`;
     let active = true;
     let started = false;
     let ready = false;
@@ -158,7 +163,7 @@ function PygameRun({
       setStatus("stopped");
     };
     return destroy;
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     sourceRef.current = code;

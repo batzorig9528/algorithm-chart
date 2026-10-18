@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PYGAME_EXAMPLE } from "@/lib/pygame";
+import { LIGHT_EXAMPLE } from "@/lib/light-examples";
 
 export const PYGAME_DRAFT_KEY = "flow-pygame-draft-v1";
 
 export function usePygameDraft() {
-  const [code, setCode] = useState(PYGAME_EXAMPLE);
+  const [code, setCode] = useState(LIGHT_EXAMPLE);
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
-  const latest = useRef(PYGAME_EXAMPLE);
+  const latest = useRef(LIGHT_EXAMPLE);
   const dirty = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 

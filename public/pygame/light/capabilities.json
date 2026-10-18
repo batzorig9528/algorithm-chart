@@ -1,0 +1,16 @@
+{
+  "pygame": ["init", "quit", "Rect", "display", "draw", "event", "key", "mouse", "time", "font", "QUIT", "KEYDOWN", "KEYUP", "MOUSEMOTION", "MOUSEBUTTONDOWN", "MOUSEBUTTONUP", "K_LEFT", "K_RIGHT", "K_UP", "K_DOWN", "K_SPACE", "K_ESCAPE", "K_RETURN", "K_a", "K_d", "K_s", "K_w"],
+  "pygame.display": ["set_mode", "set_caption", "flip", "update"],
+  "pygame.draw": ["rect", "circle", "line", "ellipse", "polygon"],
+  "pygame.event": ["get"],
+  "pygame.key": ["get_pressed"],
+  "pygame.mouse": ["get_pos", "get_pressed"],
+  "pygame.time": ["Clock", "get_ticks"],
+  "pygame.font": ["Font", "SysFont"],
+  "Surface": ["fill", "blit", "get_width", "get_height", "get_size"],
+  "Clock": ["tick"],
+  "Font": ["render"],
+  "Rect": ["x", "y", "width", "height", "left", "top", "right", "bottom", "colliderect", "collidepoint", "move"],
+  "random": ["random", "randint", "randrange", "choice", "shuffle", "seed", "uniform"],
+  "math": ["pi", "e", "sin", "cos", "tan", "sqrt", "floor", "ceil", "fabs", "pow", "degrees", "radians"]
+}

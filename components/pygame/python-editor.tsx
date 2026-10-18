@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from "react";
+import { lightPythonIssues, type LightIssue } from "@/lib/light-python";
 import { analyzePython, ASSIST_LIMIT, pythonCompletions, type PythonCompletion } from "@/lib/python-editor";
 
-export function PythonEditor({ code, onChange, editorRef, disabled = false }: {
+export function PythonEditor({ code, onChange, editorRef, disabled = false, diagnostics = [], light = false }: {
   code: string;
   onChange: (code: string) => void;
   editorRef: RefObject<HTMLTextAreaElement | null>;
   disabled?: boolean;
+  diagnostics?: LightIssue[];
+  light?: boolean;
 }) {
   const paint = useRef<HTMLPreElement>(null);
   const gutter = useRef<HTMLDivElement>(null);
@@ -18,6 +21,7 @@ export function PythonEditor({ code, onChange, editorRef, disabled = false }: {
   const lineCount = useMemo(() => code.split("\n").length, [code]);
   const visibleStart = Math.min(firstLine, Math.max(0, lineCount - 1));
   const analysis = useMemo(() => analyzePython(code), [code]);
+  const allIssues = [...analysis.issues, ...diagnostics];
   const oversized = code.length > ASSIST_LIMIT;
   useEffect(() => {
     if (completion.options.length) {
@@ -29,14 +33,20 @@ export function PythonEditor({ code, onChange, editorRef, disabled = false }: {
     const parts = analysis.tokens.flatMap(token => {
       const gap = code.slice(end, token.from);
       end = token.to;
-      return [gap, <span key={token.from} className={`py-${token.kind}`}>{code.slice(token.from, token.to)}</span>];
+      return [gap, <span key={token.from} className={`py-${token.kind}${diagnostics.some(issue => token.from < issue.to && token.to > issue.from) ? " py-unsupported" : ""}`}>{code.slice(token.from, token.to)}</span>];
     });
     return [...parts, code.slice(end), "\n"];
-  }, [analysis, code]);
+  }, [analysis, code, diagnostics]);
 
   function dismiss() { setCompletion({ source: "", from: 0, options: [] }); }
   function suggest(value: string, cursor: number, explicit = false) {
-    setCompletion({ ...pythonCompletions(value, cursor, explicit), source: value });
+    const result = pythonCompletions(value, cursor, explicit);
+    if (light) result.options = result.options.filter(option => {
+      if (option.label === "asyncio" || option.label === "async" || option.label === "await") return false;
+      const candidate = value.slice(0, result.from) + option.insert + value.slice(cursor);
+      return !lightPythonIssues(candidate).some(issue => issue.from < result.from + option.insert.length && issue.to > result.from);
+    });
+    setCompletion({ ...result, source: value });
     setSelection(0);
   }
   function insert(text: string, from: number, to: number, caret = from + text.length) {
@@ -86,7 +96,7 @@ export function PythonEditor({ code, onChange, editorRef, disabled = false }: {
             <div style={{ height: lineCount * 23, paddingTop: visibleStart * 23 }}>
               {Array.from({ length: Math.min(60, lineCount - visibleStart) }, (_, offset) => {
                 const index = visibleStart + offset;
-                return <div key={index} className={analysis.issues.some(issue => issue.line === index + 1) ? "python-error-line" : undefined}>{index + 1}</div>;
+                return <div key={index} className={allIssues.some(issue => issue.line === index + 1) ? "python-error-line" : undefined}>{index + 1}</div>;
               })}
             </div>
           </div>
@@ -123,8 +133,8 @@ export function PythonEditor({ code, onChange, editorRef, disabled = false }: {
         )}
       </div>
       <div id="python-diagnostics" className="python-diagnostics">
-        <small>{oversized ? "Том файл: өнгө болон туслах шалгалт түр унтарсан." : "Синтаксийн анхан шатны шалгалт · Бүрэн шалгалт ажиллуулах үед хийгдэнэ."}</small>
-        {analysis.issues.map((issue, index) => <button key={`${issue.from}-${index}`} type="button" onClick={() => {
+        <small>{oversized ? "Том файл: өнгө болон туслах шалгалт түр унтарсан." : "Синтакс болон дэмжих үйлдлийн шалгалт · Динамик кодыг ажиллуулах үед дахин шалгана."}</small>
+        {allIssues.map((issue, index) => <button key={`${issue.from}-${index}`} type="button" onClick={() => {
           editorRef.current?.focus(); editorRef.current?.setSelectionRange(issue.from, issue.from + 1);
           if (editorRef.current) {
             editorRef.current.scrollTop = Math.max(0, (issue.line - 3) * 23);

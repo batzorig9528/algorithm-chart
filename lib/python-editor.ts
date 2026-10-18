@@ -86,11 +86,13 @@ export function analyzePython(source: string) {
 export type PythonCompletion = { label: string; insert: string; detail: string };
 const functions: PythonCompletion[] = builtins.map(label => ({ label, insert: `${label}()`, detail: "Python функц" }));
 const members: Record<string, string[]> = {
-  pygame: ["init()", "quit()", "display", "draw", "event", "key", "time", "Rect()", "Surface()", "QUIT", "KEYDOWN", "MOUSEBUTTONDOWN", "K_LEFT", "K_RIGHT", "K_UP", "K_DOWN"],
+  pygame: ["init()", "quit()", "display", "draw", "event", "key", "time", "mouse", "font", "Rect()", "Surface()", "QUIT", "KEYDOWN", "MOUSEBUTTONDOWN", "K_LEFT", "K_RIGHT", "K_UP", "K_DOWN"],
   "pygame.display": ["set_mode()", "set_caption()", "flip()", "update()"],
   "pygame.draw": ["circle()", "rect()", "line()", "ellipse()", "polygon()"],
   "pygame.event": ["get()", "pump()"],
   "pygame.key": ["get_pressed()"],
+  "pygame.mouse": ["get_pos()", "get_pressed()"],
+  "pygame.font": ["SysFont()", "Font()"],
   "pygame.time": ["Clock()", "get_ticks()"],
   asyncio: ["run()", "sleep()", "create_task()"],
   screen: ["fill()", "blit()", "get_width()", "get_height()"],

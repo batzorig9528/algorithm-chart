@@ -76,33 +76,51 @@ Enter/Tab оруулна, Esc хаана; Shift+Tab редактороос га�
 мэдээлнэ. Туслах боломжууд интернетгүй ажиллах бөгөөд Python runtime-аас хамаарахгүй.
 100,000 тэмдэгтээс урт файлд өнгө болон туслах шалгалтыг түр унтраана.
 
-Код нь хөтөч доторх тусгаарласан iframe-д Pygbag `archives/0.9` / Python 3.12 /
-pygame-ce ашиглан ажиллана. Runtime-ийг `pygame-web.github.io`-оос ачаалах тул
-интернет хэрэгтэй. Тоглоомын давталтыг `async def main()` дотор байрлуулж,
+Үндсэн **Хөнгөн Python** горим нь төсөлд багтсан Skulpt interpreter болон
+Canvas ашиглана. Runtime файлууд нийлээд ойролцоогоор 615 KB (шахалтгүй);
+том Python WebAssembly эсвэл гаднын CDN-ээс файл татахгүй. Browser дотор
+тусгаарласан iframe + disposable Worker ажиллана. Нэг тоглоомын worker,
+нэг жижиг синтакс шалгах worker байна. 2 GB RAM төхөөрөмж бүрийн гүйцэтгэлийг
+баталгаажуулаагүй боловч анхны таталт бүрэн Pygame-ээс мэдэгдэхүйц бага.
+
+Дэмжих боломжууд:
+
+- Python хувьсагч, list/tuple, индекс/slice, `if/else`, `for/while`, `def`, `return`.
+- `pygame.display.set_mode`, `set_caption`, `flip`, `update`.
+- `pygame.draw.rect`, `circle`, `line`, `ellipse`, `polygon`.
+- `screen.fill`, `get_size`, `get_width`, `get_height`; `blit` нь зөвхөн текст.
+- `pygame.font.SysFont`/`Font`, `render`; `pygame.Rect`, `colliderect`, `collidepoint`.
+- Keyboard, mouse, event.get, key.get_pressed, mouse.get_pos/get_pressed.
+- `pygame.time.Clock().tick(fps)` (1–60 FPS), `get_ticks`; random/math-ийн нийтлэг функцүүд.
+
+Бүх дэмжих API нь `public/pygame/light/capabilities.json` файлд байна.
+**Snake жишээ** нь жагсаалт, функц, давталт, keyboard, random, онооны текст ашиглана.
+Тоглоомын давталт бүрд `clock.tick(30)` дуудна. Тасралтгүй тооцоолол 1.5 секундээс
+хэтэрвэл worker алдаа буцаана; Stop нь iframe болон worker-ийг устгана.
+Canvas 1280×720, код 100,000 тэмдэгт, кадрын зурах команд 2,000-аар хязгаарлагдана.
+
+Дэмжигдэхгүй импорт, API, async/await болон файл/динамик кодын үйлдлүүдийг
+редактор улаанаар доогуур зурж, шалтгааныг мөрөөр харуулна. Light горимын
+Python compiler кодыг ажиллуулахгүйгээр синтаксийг шалгана. Статик шалгалт
+динамикаар үүсгэсэн бүх объектын төрлийг мэдэхгүй; үлдсэн алдаа runtime-д харагдана.
+Улаан тэмдэглэгээтэй үед light Run идэвхгүй байна.
+
+**Бүрэн Pygame**-ийг тусад нь сонгоход хуучин Pygbag `archives/0.9` / Python 3.12 /
+pygame-ce runtime гаднын CDN-ээс ачаална. Энэ горимд `async def main()`,
 давталт бүрд `await asyncio.sleep(0)`, төгсгөлд `asyncio.run(main())` ашиглана.
-Завсарлагагүй синхрон давталт хөтчийг гацааж болно. Одоогоор зураг, дууны
-файл оруулах болон нэмэлт Python багц суулгах интерфэйс байхгүй.
+Горим солих нь бичсэн кодыг өөрчлөхгүй; **Жишээг сэргээх** тухайн горимын жишээг оруулна.
+Хоёр горим хоёулаа урьдчилан бэлтгэгдсэн нэг iframe-ийг Run дээр ашиглана.
+Бүрэн горимын 3 минутын хүлээх/цуцлах сонголт хэвээр.
 
-Редактор нээхэд нэг тусгаарласан runtime урьдчилан бэлтгэгдэнэ. Бэлэн болсон
-төлөвийг редакторын доор харуулна. **Ажиллуулах** товч тэр iframe-ийг дахин
-үүсгэхгүйгээр хамгийн сүүлд бичсэн кодыг эхлүүлнэ. Бэлтгэх үед хэрэглэгчийн код
-ажиллахгүй. Цонх хаахад өмнөх instance устаж, нэг цэвэр instance бэлтгэгдэнэ;
-Pygame хуудаснаас гарахад бүгд чөлөөлөгдөнө. Эхний таталтын хэмжээ өөрчлөгдөөгүй
-тул хуудас нээгээд шууд ажиллуулахад интернетээс хамаарсан хүлээлт байж болно.
-
-Удаан сүлжээнд 60 секунд болоход runtime-ийг устгахгүй. 3 минутын дараа
-**Үргэлжлүүлэн хүлээх / Цуцлах** сонголт гарна; хүлээхэд таталтыг дахин эхлүүлэхгүй.
-Дууссан/алдаатай runtime-ийг чөлөөлнө, консолын текст хэвээр үлдэнэ.
-Жишээ тоглоом 30 FPS, Pygame консолын шинэчлэлт 150 ms-аар багцлагдана.
-Блок редакторын консол сүүлийн 500 мөр, нийт 100,000 тэмдэгтээр хязгаарлагдана.
-Эдгээр өөрчлөлт нь 2 GB RAM төхөөрөмж бүрд ажиллах баталгаа биш;
-runtime-ийн анхны таталт болон WebAssembly санах ой шаардлагатай хэвээр.
+Skulpt-ийн хувилбар, эх сурвалж, лиценз `public/pygame/light/vendor/` дотор байна.
+`pygame.py`-г өөрчилсний дараа `python scripts/build-light-module.py` ажиллуулж
+browser bundle-ийг шинэчилнэ. Дэмжих API өөрчилбөл capabilities.json болон тестүүдийг шинэчилнэ.
 
 Pygame-ийн UI, алдааны төлөв болон консолын хязгаарын тестүүд:
 
 ```sh
-npx tsx --test tests/pygame.test.ts tests/python-editor.test.ts
-npx playwright test tests/pygame.spec.ts
+npx tsx --test tests/pygame.test.ts tests/python-editor.test.ts tests/light-runtime.test.ts
+npx playwright test tests/pygame.spec.ts tests/light-pygame.spec.ts
 ```
 
 Бодит WebAssembly runtime, canvas, гар/хулгана болон Python traceback шалгах

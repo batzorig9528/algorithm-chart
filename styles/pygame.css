@@ -315,3 +315,8 @@
   }
 }
 
+
+.pygame-mode-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 0 0 16px; font-size: 12px; }
+.pygame-mode-toolbar select { max-width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--k6); }
+.python-highlight .py-unsupported { color: #c5213e !important; text-decoration: underline wavy; text-decoration-thickness: 1px; background: #c5213e14; }
+[data-theme="dark"] .python-highlight .py-unsupported { color: #ff8a9e !important; }
