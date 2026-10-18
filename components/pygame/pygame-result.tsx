@@ -13,6 +13,7 @@ import {
 
 const labels: Record<PygameStatus, string> = {
   loading: "Pygame ачаалж байна…",
+  ready: "Ажиллуулахад бэлэн",
   running: "Ажиллаж байна",
   completed: "Ажиллаж дууслаа",
   stopped: "Зогсоосон",
@@ -22,18 +23,26 @@ const labels: Record<PygameStatus, string> = {
 export function PygameResult({
   code,
   onClose,
+  onStatus,
 }: {
-  code: string;
+  code: string | null;
   onClose: () => void;
+  onStatus: (status: PygameStatus) => void;
 }) {
   const [attempt, setAttempt] = useState(0);
+  function close() {
+    onClose();
+    // Dispose the user's environment and prepare one clean instance.
+    setAttempt(value => value + 1);
+  }
   return (
-    <Modal wide onClose={onClose}>
+    <Modal wide open={code !== null} onClose={close}>
       <h2 id="modal-title">Pygame үр дүн</h2>
       <PygameRun
         key={attempt}
         code={code}
-        onClose={onClose}
+        onClose={close}
+        onStatus={onStatus}
         onRestart={() => setAttempt((value) => value + 1)}
       />
     </Modal>
@@ -44,16 +53,21 @@ function PygameRun({
   code,
   onClose,
   onRestart,
+  onStatus,
 }: {
-  code: string;
+  code: string | null;
   onClose: () => void;
   onRestart: () => void;
+  onStatus: (status: PygameStatus) => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const consoleRef = useRef<HTMLPreElement>(null);
   const close = useEffectEvent(onClose);
   const stopRef = useRef<() => void>(() => {});
   const waitRef = useRef<() => void>(() => {});
+  const startRef = useRef<() => void>(() => {});
+  const sourceRef = useRef(code);
+  const reportStatus = useEffectEvent(onStatus);
   const [status, setStatus] = useState<PygameStatus>("loading");
   const [output, setOutput] = useState("");
   const [slow, setSlow] = useState(false);
@@ -67,6 +81,7 @@ function PygameRun({
     iframe.src = `/pygame/runtime.html#${runId}`;
     let active = true;
     let started = false;
+    let ready = false;
     const destroy = () => {
       active = false;
       clearTimeout(timeout);
@@ -81,6 +96,17 @@ function PygameRun({
       clearTimeout(timeout);
       timeout = window.setTimeout(() => setSlow(true), PYGAME_LOAD_TIMEOUT);
     };
+    function start() {
+      const source = sourceRef.current;
+      if (!active || !ready || started || source === null) return;
+      started = true;
+      setStatus("loading");
+      waitRef.current();
+      iframe.contentWindow?.postMessage(
+        { channel: PYGAME_CHANNEL, runId, type: "run", code: source }, "*",
+      );
+    }
+    startRef.current = start;
     function receive(event: MessageEvent<unknown>) {
       if (
         !active ||
@@ -92,12 +118,12 @@ function PygameRun({
       const message = event.data;
       switch (message.type) {
         case "ready":
-          if (started) return;
-          started = true;
-          iframe.contentWindow?.postMessage(
-            { channel: PYGAME_CHANNEL, runId, type: "run", code },
-            "*",
-          );
+          if (ready) return;
+          ready = true;
+          clearTimeout(timeout);
+          setSlow(false);
+          setStatus("ready");
+          start();
           break;
         case "running":
           clearTimeout(timeout);
@@ -132,7 +158,14 @@ function PygameRun({
       setStatus("stopped");
     };
     return destroy;
+  }, []);
+
+  useEffect(() => {
+    sourceRef.current = code;
+    startRef.current();
   }, [code]);
+
+  useEffect(() => { reportStatus(status); }, [status]);
 
   useEffect(() => {
     const console = consoleRef.current;

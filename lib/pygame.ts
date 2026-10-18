@@ -2,7 +2,7 @@ export const PYGAME_CHANNEL = "flow-pygame-v1";
 export const PYGAME_LOAD_TIMEOUT = 180_000;
 
 export type PygameStatus =
-  "loading" | "running" | "completed" | "stopped" | "error";
+  "loading" | "ready" | "running" | "completed" | "stopped" | "error";
 
 export type PygameMessage = {
   channel: typeof PYGAME_CHANNEL;

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Code2, Download, Gamepad2, Play, RotateCcw } from "lucide-react";
 import { downloadText } from "@/lib/download";
-import { PYGAME_EXAMPLE } from "@/lib/pygame";
+import { PYGAME_EXAMPLE, type PygameStatus } from "@/lib/pygame";
 import { PythonEditor } from "@/components/pygame/python-editor";
 import { usePygameDraft } from "@/hooks/use-pygame-draft";
 import { PygameResult } from "@/components/pygame/pygame-result";
@@ -11,6 +11,7 @@ import { PygameResult } from "@/components/pygame/pygame-result";
 export function PygameWorkspace() {
   const { code, setCode, ready, storageError } = usePygameDraft();
   const [run, setRun] = useState<{ code: string } | null>(null);
+  const [runtimeStatus, setRuntimeStatus] = useState<PygameStatus>("loading");
   const editor = useRef<HTMLTextAreaElement>(null);
   const runButton = useRef<HTMLButtonElement>(null);
 
@@ -73,6 +74,11 @@ export function PygameWorkspace() {
         <p className="pygame-save-status" role="status">
           {storageError ? "Хадгалж чадсангүй. .py татах товчоор кодоо аваарай." : ready ? "Код энэ төхөөрөмжид автоматаар хадгалагдана." : "Хадгалсан кодыг сэргээж байна…"}
         </p>
+        {!run && <p className="pygame-save-status" role="status">
+          {runtimeStatus === "ready" ? "Pygame бэлэн — кодоо шууд ажиллуулж болно."
+            : runtimeStatus === "error" ? "Pygame бэлтгэхэд алдаа гарлаа. Ажиллуулах цонхноос дахин оролдоно уу."
+            : "Pygame-ийг урьдчилан бэлдэж байна. Энэ хооронд кодоо бичиж болно."}
+        </p>}
         <div className="pygame-help" id="pygame-code-help">
           <p>
             <strong>Хөтөч дээр ажиллах давталт</strong> —{" "}
@@ -88,15 +94,14 @@ export function PygameWorkspace() {
           </p>
         </div>
       </section>
-      {run && (
-        <PygameResult
-          code={run.code}
-          onClose={() => {
-            setRun(null);
-            requestAnimationFrame(() => runButton.current?.focus());
-          }}
-        />
-      )}
+      <PygameResult
+        code={run?.code ?? null}
+        onStatus={setRuntimeStatus}
+        onClose={() => {
+          setRun(null);
+          requestAnimationFrame(() => runButton.current?.focus());
+        }}
+      />
     </main>
   );
 }

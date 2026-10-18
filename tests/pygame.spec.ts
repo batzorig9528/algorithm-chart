@@ -52,7 +52,7 @@ test("pygame editor, download, navigation, modal and responsive layout", async (
   await page.getByRole("button", { name: "Дахин ажиллуулах" }).click();
   await expect(page.locator("iframe")).toHaveCount(1);
   await page.getByRole("button", { name: "Хаах", exact: true }).click();
-  await expect(page.locator("iframe")).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(1);
   await expect(editor(page)).toHaveValue("print('Миний код')");
   await expect(run(page)).toBeFocused();
 
@@ -98,6 +98,40 @@ test("pygame reports a failed runtime download and can retry", async ({
   await page.getByRole("button", { name: "Дахин ажиллуулах" }).click();
   await expect(page.locator(".pygame-status")).toHaveText("Алдаа гарлаа");
   await expect(consoleOutput(page)).toContainText("Интернет холболтоо шалгаад");
+});
+
+test("prepares one runtime before Run and starts the latest code in that same frame", async ({ page }) => {
+  await page.route("https://pygame-web.github.io/**", route => route.fulfill({
+    contentType: "text/javascript",
+    body: `const runId = location.hash.slice(1);
+      window.testRuns = [];
+      addEventListener('message', event => {
+        if (event.data.type === 'run') {
+          window.testRuns.push(event.data.code);
+          parent.postMessage({channel:'flow-pygame-v1',runId,type:'running'}, '*');
+        }
+      });
+      parent.postMessage({channel:'flow-pygame-v1',runId,type:'ready'}, '*');`,
+  }));
+  await page.goto("/pygame");
+  await expect(page.getByText("Pygame бэлэн — кодоо шууд ажиллуулж болно.")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(1);
+  const src = await page.locator("iframe").getAttribute("src");
+  const frame = page.frames().find(frame => frame.url().includes("/pygame/runtime.html"))!;
+  const runs = () => frame.evaluate(() => (window as unknown as { testRuns: string[] }).testRuns);
+  expect(await runs()).toEqual([]);
+  await editor(page).fill("print('latest source')");
+  await run(page).click();
+  await expect(page.locator(".pygame-status")).toHaveText("Ажиллаж байна");
+  await expect(page.locator("iframe")).toHaveAttribute("src", src!);
+  expect(await runs()).toEqual(["print('latest source')"]);
+  await page.getByRole("button", { name: "Хаах", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(1);
+  await expect(page.locator("iframe")).not.toHaveAttribute("src", src!);
+  await page.goto("/help");
+  await expect(page.locator("iframe")).toHaveCount(0);
 });
 
 test("slow runtime stays alive, can keep waiting, and can be cancelled", async ({ page }) => {

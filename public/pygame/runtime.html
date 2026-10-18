@@ -109,7 +109,8 @@ async def custom_site():
 
     emit("ready")
     while not platform.window.flowHasSource:
-        await asyncio.sleep(0)
+        # Idle preparation must not spin a CPU core while the student types.
+        await asyncio.sleep(0.05)
 
     source = str(platform.window.flowSource)
     # Preserve main.py and source lines in both synchronous and async tracebacks.
