@@ -78,6 +78,68 @@
   height: clamp(340px, 55vh, 620px);
   min-width: 0;
 }
+.python-editor-wrap { position: relative; }
+.python-input-stack { position: relative; flex: 1; min-width: 0; }
+.python-input-stack #pygame-code,
+.python-highlight {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 18px 16px;
+  font: 13px/23px var(--mono);
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  box-sizing: border-box;
+}
+.python-highlight { pointer-events: none; color: var(--ink); background: var(--k6); }
+.python-input-stack #pygame-code { color: transparent; -webkit-text-fill-color: transparent; caret-color: var(--ink); background: transparent; }
+.python-input-stack #pygame-code::selection { background: #8771ed44; }
+.py-keyword { color: #7b38a5; }
+.py-string { color: #237347; }
+.py-number { color: #a45616; }
+.py-comment { color: #687182; }
+.py-builtin, .py-function { color: #175cb1; }
+[data-theme="dark"] .py-keyword { color: #c6a3ff; }
+[data-theme="dark"] .py-string { color: #8ed6a5; }
+[data-theme="dark"] .py-number { color: #f2c17b; }
+[data-theme="dark"] .py-comment { color: #a3a9b8; }
+[data-theme="dark"] .py-builtin, [data-theme="dark"] .py-function { color: #8cc3ff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .py-keyword { color: #c6a3ff; }
+  :root:not([data-theme="light"]) .py-string { color: #8ed6a5; }
+  :root:not([data-theme="light"]) .py-number { color: #f2c17b; }
+  :root:not([data-theme="light"]) .py-comment { color: #a3a9b8; }
+  :root:not([data-theme="light"]) .py-builtin,
+  :root:not([data-theme="light"]) .py-function { color: #8cc3ff; }
+}
+.python-completions {
+  position: absolute; left: 56px; bottom: 8px; z-index: 3;
+  width: min(360px, calc(100% - 64px)); max-height: 220px; overflow: auto;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--k6); box-shadow: 0 4px 18px #0002;
+}
+.python-completions [role="option"] { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; cursor: pointer; }
+.python-completions [aria-selected="true"] { background: var(--purple-light); }
+.python-completions code { color: var(--ink); font: 12px var(--mono); }
+.python-completions small { color: var(--muted); }
+.python-diagnostics { padding: 10px 18px; border-top: 1px solid var(--line); max-height: 150px; overflow: auto; }
+.python-diagnostics small { color: var(--muted); }
+.python-diagnostics button { display: block; text-align: left; background: none; border: 0; padding: 4px 0; color: #b7324d; font-size: 12px; }
+.python-error-line { color: #b7324d; background: #cb466318; }
+.pygame-save-status { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.pygame-slow-load { padding: 12px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 8px; }
+.pygame-slow-load p { margin-bottom: 10px; font-size: 12px; }
+.pygame-slow-load button + button { margin-left: 8px; }
+@media (forced-colors: active) {
+  .python-input-stack #pygame-code { color: CanvasText; -webkit-text-fill-color: CanvasText; }
+  .python-highlight { visibility: hidden; }
+}
 .pygame-line-numbers,
 #pygame-code {
   font: 13px/23px var(--mono);
@@ -252,3 +314,4 @@
     gap: 10px;
   }
 }
+

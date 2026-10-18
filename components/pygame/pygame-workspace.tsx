@@ -1,29 +1,18 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState } from "react";
 import { Code2, Download, Gamepad2, Play, RotateCcw } from "lucide-react";
 import { downloadText } from "@/lib/download";
 import { PYGAME_EXAMPLE } from "@/lib/pygame";
+import { PythonEditor } from "@/components/pygame/python-editor";
+import { usePygameDraft } from "@/hooks/use-pygame-draft";
 import { PygameResult } from "@/components/pygame/pygame-result";
 
 export function PygameWorkspace() {
-  const [code, setCode] = useState(PYGAME_EXAMPLE);
+  const { code, setCode, ready, storageError } = usePygameDraft();
   const [run, setRun] = useState<{ code: string } | null>(null);
   const editor = useRef<HTMLTextAreaElement>(null);
-  const gutter = useRef<HTMLDivElement>(null);
   const runButton = useRef<HTMLButtonElement>(null);
-
-  function indent(event: KeyboardEvent<HTMLTextAreaElement>) {
-    // Shift+Tab leaves the editor for keyboard-only navigation.
-    if (event.key !== "Tab" || event.shiftKey || event.altKey || event.ctrlKey)
-      return;
-    event.preventDefault();
-    const input = event.currentTarget;
-    const start = input.selectionStart;
-    const end = input.selectionEnd;
-    setCode(code.slice(0, start) + "    " + code.slice(end));
-    requestAnimationFrame(() => input.setSelectionRange(start + 4, start + 4));
-  }
 
   return (
     <main className="content-page pygame-page">
@@ -68,46 +57,22 @@ export function PygameWorkspace() {
                 ref={runButton}
                 type="button"
                 className="pygame-button pygame-primary"
-                disabled={!code.trim()}
+                disabled={!ready || !code.trim()}
                 onClick={() => setRun({ code })}
               >
                 <Play size={15} /> Ажиллуулах
               </button>
             </div>
           </div>
-          <div className="pygame-code-editor">
-            <div
-              className="pygame-line-numbers"
-              ref={gutter}
-              aria-hidden="true"
-            >
-              {code.split("\n").map((_, index) => (
-                <div key={index}>{index + 1}</div>
-              ))}
-            </div>
-            <textarea
-              ref={editor}
-              id="pygame-code"
-              aria-label="Pygame Python код"
-              aria-describedby="pygame-code-help"
-              value={code}
-              onChange={(event) => setCode(event.target.value)}
-              onKeyDown={indent}
-              onScroll={(event) => {
-                if (gutter.current)
-                  gutter.current.scrollTop = event.currentTarget.scrollTop;
-              }}
-              spellCheck={false}
-              autoCapitalize="off"
-              autoCorrect="off"
-              wrap="off"
-            />
-          </div>
+          <PythonEditor code={code} onChange={setCode} editorRef={editor} disabled={!ready} />
           <div className="pygame-editor-footer">
             <span>Python 3.12 · pygame-ce</span>
-            <span>Tab: 4 зай · Shift+Tab: талбараас гарах</span>
+            <span>Ctrl+Space: санал · ↑↓: сонгох · Enter/Tab: оруулах · Shift+Tab: гарах</span>
           </div>
         </div>
+        <p className="pygame-save-status" role="status">
+          {storageError ? "Хадгалж чадсангүй. .py татах товчоор кодоо аваарай." : ready ? "Код энэ төхөөрөмжид автоматаар хадгалагдана." : "Хадгалсан кодыг сэргээж байна…"}
+        </p>
         <div className="pygame-help" id="pygame-code-help">
           <p>
             <strong>Хөтөч дээр ажиллах давталт</strong> —{" "}
@@ -117,7 +82,7 @@ export function PygameWorkspace() {
             хөтчийг гацааж болно.
           </p>
           <p>
-            Эхний ачаалалд интернет хэрэгтэй. Нэг Python файл ажиллана; зураг,
+            Эхний ачаалалд интернет хэрэгтэй, удаан сүлжээнд хэдэн минут болж болно. Нэг Python файл ажиллана; зураг,
             дуу оруулах боломжгүй. Хуудсаас гарахаасаа өмнө кодоо{" "}
             <strong>.py татах</strong> товчоор аваарай.
           </p>
@@ -135,3 +100,4 @@ export function PygameWorkspace() {
     </main>
   );
 }
+

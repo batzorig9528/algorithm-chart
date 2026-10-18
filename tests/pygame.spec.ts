@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { PYGAME_EXAMPLE, PYGAME_CHANNEL } from "../lib/pygame";
+import { PYGAME_EXAMPLE, PYGAME_CHANNEL, PYGAME_LOAD_TIMEOUT } from "../lib/pygame";
 
 const editor = (page: Page) =>
   page.getByRole("textbox", { name: "Pygame Python код" });
@@ -48,7 +48,7 @@ test("pygame editor, download, navigation, modal and responsive layout", async (
   await expect(consoleOutput(page)).not.toContainText("spoofed");
   await page.getByRole("button", { name: "Зогсоох", exact: true }).click();
   await expect(page.locator("iframe")).toHaveCount(0);
-  await expect(page.getByRole("status")).toHaveText("Зогсоосон");
+  await expect(page.locator(".pygame-status")).toHaveText("Зогсоосон");
   await page.getByRole("button", { name: "Дахин ажиллуулах" }).click();
   await expect(page.locator("iframe")).toHaveCount(1);
   await page.getByRole("button", { name: "Хаах", exact: true }).click();
@@ -64,10 +64,11 @@ test("pygame editor, download, navigation, modal and responsive layout", async (
   ).toHaveAttribute("aria-expanded", "false");
   await page.getByRole("button", { name: "Цэс", exact: true }).click();
   await page.getByRole("menuitem", { name: "Pygame", exact: true }).click();
-  await expect(editor(page)).toHaveValue(PYGAME_EXAMPLE);
+  await expect(editor(page)).toHaveValue("print('Миний код')");
   await editor(page).fill("changed");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("flow-pygame-draft-v1"))).toBe("changed");
   await page.reload();
-  await expect(editor(page)).toHaveValue(PYGAME_EXAMPLE);
+  await expect(editor(page)).toHaveValue("changed");
   await editor(page).fill("");
   await expect(run(page)).toBeDisabled();
   await page.getByRole("button", { name: "Жишээг сэргээх" }).click();
@@ -91,28 +92,55 @@ test("pygame reports a failed runtime download and can retry", async ({
   await page.route("https://pygame-web.github.io/**", (route) => route.abort());
   await page.goto("/pygame");
   await run(page).click();
-  await expect(page.getByRole("status")).toHaveText("Алдаа гарлаа");
+  await expect(page.locator(".pygame-status")).toHaveText("Алдаа гарлаа");
   await expect(consoleOutput(page)).toContainText("Интернет холболтоо шалгаад");
-  const oldSrc = await page.locator("iframe").getAttribute("src");
+  await expect(page.locator("iframe")).toHaveCount(0);
   await page.getByRole("button", { name: "Дахин ажиллуулах" }).click();
-  await expect(page.locator("iframe")).not.toHaveAttribute("src", oldSrc!);
+  await expect(page.locator(".pygame-status")).toHaveText("Алдаа гарлаа");
   await expect(consoleOutput(page)).toContainText("Интернет холболтоо шалгаад");
 });
 
-test("pygame times out and removes a runtime that never becomes ready", async ({
-  page,
-}) => {
-  await page.route("https://pygame-web.github.io/**", (route) =>
-    route.fulfill({ contentType: "text/javascript", body: "" }),
-  );
+test("slow runtime stays alive, can keep waiting, and can be cancelled", async ({ page }) => {
+  await page.route("https://pygame-web.github.io/**", route => route.fulfill({ contentType: "text/javascript", body: "" }));
   await page.clock.install();
   await page.goto("/pygame");
   await run(page).click();
-  await expect(page.locator("iframe")).toHaveCount(1);
+  const src = await page.locator("iframe").getAttribute("src");
   await page.clock.fastForward(60_001);
-  await expect(page.getByRole("status")).toHaveText("Алдаа гарлаа");
+  await expect(page.locator("iframe")).toHaveAttribute("src", src!);
+  await page.clock.fastForward(PYGAME_LOAD_TIMEOUT);
+  await expect(page.getByRole("button", { name: "Үргэлжлүүлэн хүлээх" })).toBeVisible();
+  await page.getByRole("button", { name: "Үргэлжлүүлэн хүлээх" }).click();
+  await expect(page.locator("iframe")).toHaveAttribute("src", src!);
+  await page.clock.fastForward(PYGAME_LOAD_TIMEOUT);
+  await page.getByRole("button", { name: "Цуцлах", exact: true }).click();
   await expect(page.locator("iframe")).toHaveCount(0);
-  await expect(consoleOutput(page)).toContainText("Pygame ачаалж чадсангүй");
+  await expect(page.locator(".pygame-status")).toHaveText("Зогсоосон");
+});
+
+test("Python editor completes, highlights, diagnoses and restores drafts", async ({ page }) => {
+  await page.goto("/pygame");
+  await editor(page).fill("pri");
+  await expect(page.getByRole("option", { name: /print/ })).toBeVisible();
+  await editor(page).press("Enter");
+  await expect(editor(page)).toHaveValue("print()");
+  await editor(page).fill("pygame.draw.ci");
+  await editor(page).press("Tab");
+  await expect(editor(page)).toHaveValue("pygame.draw.circle()");
+  await editor(page).fill("if True\n    print('hello'");
+  await expect(page.locator("#python-diagnostics")).toContainText("Мөр 1");
+  await expect(page.locator("#python-diagnostics")).toContainText("хаалт хаагдаагүй");
+  await editor(page).fill("print('hello') # comment");
+  await expect(page.locator(".py-string")).toHaveText("'hello'");
+  await expect(page.locator(".py-comment")).toHaveText("# comment");
+  await expect(page.locator("#python-diagnostics button")).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("flow-pygame-draft-v1"))).toBe("print('hello') # comment");
+  await page.reload();
+  await expect(editor(page)).toHaveValue("print('hello') # comment");
+  await editor(page).fill("");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("flow-pygame-draft-v1"))).toBe("");
+  await page.reload();
+  await expect(editor(page)).toHaveValue("");
 });
 
 test.describe("real Pygame runtime", () => {
@@ -127,7 +155,7 @@ test.describe("real Pygame runtime", () => {
   }) => {
     await page.goto("/pygame");
     await run(page).click();
-    await expect(page.getByRole("status")).toHaveText("Ажиллаж байна", {
+    await expect(page.locator(".pygame-status")).toHaveText("Ажиллаж байна", {
       timeout: 65_000,
     });
     await expect(consoleOutput(page)).toContainText("Сумтай товчоор", {
@@ -167,7 +195,7 @@ async def main():
         await asyncio.sleep(0)
 asyncio.run(main())`);
     await run(page).click();
-    await expect(page.getByRole("status")).toHaveText("Ажиллаж байна", {
+    await expect(page.locator(".pygame-status")).toHaveText("Ажиллаж байна", {
       timeout: 65_000,
     });
     await canvas.press("ArrowRight");
@@ -186,7 +214,7 @@ asyncio.run(main())`);
     await page.getByRole("button", { name: "Зогсоох", exact: true }).click();
     await expect(page.locator("iframe")).toHaveCount(0);
     await page.getByRole("button", { name: "Дахин ажиллуулах" }).click();
-    await expect(page.getByRole("status")).toHaveText("Ажиллаж байна", {
+    await expect(page.locator(".pygame-status")).toHaveText("Ажиллаж байна", {
       timeout: 65_000,
     });
     await expect(consoleOutput(page)).not.toContainText("KEY");
@@ -228,7 +256,7 @@ asyncio.run(main())`);
     ]) {
       await editor(page).fill(scenario.code);
       await run(page).click();
-      await expect(page.getByRole("status")).toHaveText(scenario.status, {
+      await expect(page.locator(".pygame-status")).toHaveText(scenario.status, {
         timeout: 65_000,
       });
       await expect(consoleOutput(page)).toContainText(scenario.output);
@@ -238,3 +266,4 @@ asyncio.run(main())`);
     }
   });
 });
+

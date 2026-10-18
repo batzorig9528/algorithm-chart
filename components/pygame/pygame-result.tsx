@@ -53,8 +53,10 @@ function PygameRun({
   const consoleRef = useRef<HTMLPreElement>(null);
   const close = useEffectEvent(onClose);
   const stopRef = useRef<() => void>(() => {});
+  const waitRef = useRef<() => void>(() => {});
   const [status, setStatus] = useState<PygameStatus>("loading");
   const [output, setOutput] = useState("");
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
     const runId = crypto.randomUUID();
@@ -71,13 +73,14 @@ function PygameRun({
       window.removeEventListener("message", receive);
       iframe.remove();
     };
-    const timeout = window.setTimeout(() => {
-      destroy();
-      setStatus("error");
-      setOutput(
-        "Pygame ачаалж чадсангүй. Интернет холболтоо шалгаад дахин ажиллуулна уу.",
-      );
-    }, PYGAME_LOAD_TIMEOUT);
+    // A slow download/compile is not a failed run. Preserve the iframe and let
+    // the user keep waiting or explicitly stop; do not discard download work.
+    let timeout = window.setTimeout(() => setSlow(true), PYGAME_LOAD_TIMEOUT);
+    waitRef.current = () => {
+      setSlow(false);
+      clearTimeout(timeout);
+      timeout = window.setTimeout(() => setSlow(true), PYGAME_LOAD_TIMEOUT);
+    };
     function receive(event: MessageEvent<unknown>) {
       if (
         !active ||
@@ -98,6 +101,7 @@ function PygameRun({
           break;
         case "running":
           clearTimeout(timeout);
+          setSlow(false);
           setStatus("running");
           iframe.focus();
           break;
@@ -105,12 +109,14 @@ function PygameRun({
           setOutput((previous) => appendPygameOutput(previous, message.text));
           break;
         case "error":
-          clearTimeout(timeout);
+          destroy();
+          setSlow(false);
           setStatus("error");
           setOutput((previous) => appendPygameOutput(previous, message.text));
           break;
         case "completed":
-          clearTimeout(timeout);
+          destroy();
+          setSlow(false);
           setStatus("completed");
           break;
         case "close":
@@ -122,6 +128,7 @@ function PygameRun({
     host.current?.appendChild(iframe);
     stopRef.current = () => {
       destroy();
+      setSlow(false);
       setStatus("stopped");
     };
     return destroy;
@@ -155,6 +162,13 @@ function PygameRun({
           </button>
         </div>
       </div>
+      {slow && status === "loading" && (
+        <div className="pygame-slow-load" role="status">
+          <p>Ачаалал удаж байна. Удаан интернет эсвэл сул төхөөрөмж дээр нэмэлт хугацаа хэрэгтэй байж болно.</p>
+          <button type="button" className="pygame-button" onClick={() => waitRef.current()}>Үргэлжлүүлэн хүлээх</button>
+          <button type="button" className="pygame-button" onClick={() => stopRef.current()}>Цуцлах</button>
+        </div>
+      )}
       <div className="pygame-stage" ref={host}>
         {status === "loading" && (
           <div className="pygame-stage-message">
@@ -166,6 +180,8 @@ function PygameRun({
             Дахин ажиллуулахад тоглоом эхнээсээ эхэлнэ.
           </div>
         )}
+        {status === "completed" && <div className="pygame-stage-message">Програм дууслаа. Үр дүнг консолд харна уу.</div>}
+        {status === "error" && <div className="pygame-stage-message">Алдааны мэдээллийг консолд харна уу.</div>}
       </div>
       <p className="pygame-input-help">
         Тоглоом дээр дарж гар, хулганаар удирдана. Esc: цонх хаах.
@@ -186,3 +202,4 @@ function PygameRun({
     </div>
   );
 }
+

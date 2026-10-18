@@ -1,10 +1,14 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type SetStateAction } from "react";
+import { boundedLogs } from "@/lib/editor-logs";
 import { execute, type Block, type Frame, type Variables } from "@/lib/flow";
 import type { Log, ExecutionStatus } from "@/types/editor";
 
 export function useExecution(blocks: Block[]) {
-  const [logs, setLogs] = useState<Log[]>([]);
+  const [logs, setRawLogs] = useState<Log[]>([]);
+  const setLogs = useCallback((next: SetStateAction<Log[]>) => {
+    setRawLogs(previous => boundedLogs(typeof next === "function" ? next(previous) : next));
+  }, []);
   const [variables, setVariables] = useState<Variables>({});
   const [status, setStatus] = useState<ExecutionStatus>("idle");
   const [active, setActive] = useState<string | null>(null);
@@ -112,3 +116,4 @@ export function useExecution(blocks: Block[]) {
     submitInput,
   };
 }
+

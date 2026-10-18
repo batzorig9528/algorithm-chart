@@ -1,5 +1,5 @@
 export const PYGAME_CHANNEL = "flow-pygame-v1";
-export const PYGAME_LOAD_TIMEOUT = 60_000;
+export const PYGAME_LOAD_TIMEOUT = 180_000;
 
 export type PygameStatus =
   "loading" | "running" | "completed" | "stopped" | "error";
@@ -46,7 +46,7 @@ async def main():
     print("Сумтай товчоор удирдах эсвэл дэлгэц дээр дарна уу.")
 
     while running:
-        dt = min(clock.tick(60) / 1000, 0.05)
+        dt = min(clock.tick(30) / 1000, 0.05)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -79,3 +79,4 @@ async def main():
 
 asyncio.run(main())
 `;
+

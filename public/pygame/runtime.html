@@ -39,7 +39,7 @@
           const message = JSON.parse(serialized);
           if (message.type === "output") {
             pending = (pending + message.text).slice(-100000);
-            if (flushTimer === undefined) flushTimer = setTimeout(flush, 50);
+            if (flushTimer === undefined) flushTimer = setTimeout(flush, 150);
           } else {
             flush();
             send(message);
@@ -237,3 +237,4 @@ asyncio.run(custom_site())
 # --></script>
   </body>
 </html>
+
